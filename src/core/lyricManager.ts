@@ -74,6 +74,7 @@ class LyricManager implements IInjectable {
             }
         });
 
+        let lyricClearTimeout;
         RNTrackPlayer.addEventListener(Event.PlaybackProgressUpdated, evt => {
             const parser = this.lyricParser;
             if (!parser || !this.trackPlayer.isCurrentMusic(parser.musicItem)) {
@@ -83,15 +84,29 @@ class LyricManager implements IInjectable {
             const currentLyricItem = getDefaultStore().get(currentLyricItemAtom);
             const newLyricItem = parser.getPosition(evt.position);
 
+            let isShowStatusBar = this.appConfig.getConfig("lyric.showStatusBarLyric");
+            if (isShowStatusBar) {
+                LyricUtil.isShowStatusBar().then(isShow => {
+                    if (!isShow) {
+                        // 桌面歌词被隐藏，重新打开
+                        this.showStatusBarLyric();
+                    }
+                });
+                clearTimeout(lyricClearTimeout);
+                lyricClearTimeout = setTimeout(() => {
+                    LyricUtil.hideStatusBarLyric();
+                    lyricClearTimeout = null;
+                }, 3000);
+            }
 
             if (currentLyricItem?.lrc !== newLyricItem?.lrc) {
                 // 更新当前歌词状态
                 getDefaultStore().set(currentLyricItemAtom, newLyricItem ?? null);
 
-                // 更新状态栏歌词
-                const showTranslation = PersistStatus.get("lyric.showTranslation");
+                if (isShowStatusBar) {
+                    // 更新状态栏歌词
+                    const showTranslation = PersistStatus.get("lyric.showTranslation");
 
-                if (this.appConfig.getConfig("lyric.showStatusBarLyric")) {
                     LyricUtil.setStatusBarLyricText(
                         (newLyricItem?.lrc ?? "") +
                         (showTranslation
@@ -102,7 +117,10 @@ class LyricManager implements IInjectable {
             }
         });
 
+        this.showStatusBarLyric();
+    }
 
+    showStatusBarLyric() {
         if (this.appConfig.getConfig("lyric.showStatusBarLyric")) {
             const statusBarLyricConfig = {
                 topPercent: this.appConfig.getConfig("lyric.topPercent"),
@@ -118,7 +136,6 @@ class LyricManager implements IInjectable {
                 statusBarLyricConfig ?? {}
             );
         }
-
         this.refreshLyric(true);
     }
 
@@ -334,8 +351,8 @@ class LyricManager implements IInjectable {
 
     /**
      * 检索最接近的歌词
-     * @param musicItem 
-     * @returns 
+     * @param musicItem
+     * @returns
      */
     private async searchSimilarLyric(musicItem: IMusic.IMusicItem) {
         const keyword = musicItem.alias || musicItem.title;

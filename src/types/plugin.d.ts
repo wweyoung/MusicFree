@@ -122,6 +122,10 @@ declare namespace IPlugin {
         importMusicItem?: (
             urlLike: string,
         ) => Promise<IMusic.IMusicItem | null>;
+
+        uploadMusicItem?: (
+            musicItem: IMusic.IMusicItem
+        ) => Promise<IMusic.IMusicItem | null>;
         /** 获取榜单 */
         getTopLists?: () => Promise<IMusic.IMusicSheetGroupItem[]>;
         /** 获取榜单详情 */

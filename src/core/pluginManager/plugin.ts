@@ -1,8 +1,4 @@
-import {
-    CacheControl,
-    internalSerializeKey,
-    localPluginPlatform,
-} from "@/constants/commonConst";
+import { CacheControl, internalSerializeKey, localPluginPlatform } from "@/constants/commonConst";
 import pathConst from "@/constants/pathConst";
 import Mp3Util from "@/native/mp3Util";
 import Base64 from "@/utils/base64";
@@ -315,7 +311,7 @@ class PluginMethodsWrapper implements IPlugin.IPluginInstanceMethods {
                 await delay(150);
                 return this.getMediaSource(musicItem, quality, --retryCount);
             }
-            errorLog("获取真实源失败", e?.message);
+            errorLog("获取真实源失败", e, e?.message);
             devLog("error", "获取真实源失败", e, e?.message);
             return null;
         }

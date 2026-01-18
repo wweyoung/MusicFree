@@ -42,6 +42,8 @@ interface ILyricUtil extends NativeModule {
     checkSystemAlertPermission: () => Promise<boolean>;
     /** 请求悬浮窗 */
     requestSystemAlertPermission: () => Promise<boolean>;
+
+    isShowStatusBar: () => Promise<boolean>;
 }
 
 const LyricUtil: ILyricUtil = NativeModules.LyricUtil;

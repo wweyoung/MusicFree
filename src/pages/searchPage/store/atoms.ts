@@ -48,4 +48,6 @@ const pageStatusAtom = atom<PageStatus>(PageStatus.EDITING);
 
 const queryAtom = atom<string>("");
 
-export { pageStatusAtom, searchResultsAtom, queryAtom };
+const typeAtom = atom<ICommon.SupportMediaType | undefined>(undefined);
+
+export { pageStatusAtom, searchResultsAtom, queryAtom, typeAtom };

@@ -14,7 +14,7 @@ import PanelHeader from "../base/panelHeader";
 import { useI18N } from "@/core/i18n";
 
 interface IMusicQualityProps {
-    type?: "play" | "download";
+    type?: "play" | "download"| "upload";
     /** 歌曲信息 */
     musicItem: IMusic.IMusicItem;
     /** 点击回调 */
@@ -29,6 +29,15 @@ export default function MusicQuality(props: IMusicQualityProps) {
     const i18n = useI18N();
 
     const { musicItem, onQualityPress, type = "play" } = props ?? {};
+    const titles = {
+        play: "common.play",
+        download: "common.download",
+        upload: "common.upload",
+    };
+    const showQualityKeys = qualityKeys.filter(quality => musicItem.qualities?.[quality]?.url);
+    if (!showQualityKeys.length) {
+        showQualityKeys.push("standard");
+    }
 
     return (
         <PanelBase
@@ -37,10 +46,7 @@ export default function MusicQuality(props: IMusicQualityProps) {
                 <>
                     <PanelHeader
                         title={i18n.t("panel.musicQuality.title", {
-                            type:
-                                type === "play"
-                                    ? i18n.t("common.play")
-                                    : i18n.t("common.download"),
+                            type: i18n.t(titles[type]),
                         })}
                         hideButtons
                     />
@@ -53,7 +59,7 @@ export default function MusicQuality(props: IMusicQualityProps) {
                                 marginBottom: safeAreaInsets.bottom,
                             },
                         ]}>
-                        {qualityKeys.map(key => {
+                        {showQualityKeys.map(key => {
                             return (
                                 <Fragment key={`frag-${key}`}>
                                     <Pressable

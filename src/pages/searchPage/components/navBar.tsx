@@ -13,15 +13,11 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { addHistory } from "../common/historySearch";
 import useSearch from "../hooks/useSearch";
-import {
-    PageStatus,
-    initSearchResults,
-    pageStatusAtom,
-    queryAtom,
-    searchResultsAtom,
-} from "../store/atoms";
+import { initSearchResults, PageStatus, pageStatusAtom, queryAtom, searchResultsAtom } from "../store/atoms";
+import { useParams } from "@/core/router";
 
 export default function NavBar() {
+    const params = useParams<"search-page">();
     const search = useSearch();
     const [query, setQuery] = useAtom(queryAtom);
     const setPageStatus = useSetAtom(pageStatusAtom);
@@ -53,7 +49,7 @@ export default function NavBar() {
                     style={style.magnify}
                 />
                 <Input
-                    autoFocus
+                    autoFocus={!params?.query}
                     style={[
                         style.searchBar,
                         {

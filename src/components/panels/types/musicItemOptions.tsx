@@ -11,7 +11,7 @@ import FastImage from "@/components/base/fastImage";
 import Toast from "@/utils/toast";
 import LocalMusicSheet from "@/core/localMusicSheet";
 import { localMusicSheetId, musicHistorySheetId } from "@/constants/commonConst";
-import { ROUTE_PATH } from "@/core/router";
+import { ROUTE_PATH, useNavigate } from "@/core/router";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PanelBase from "../base/panelBase";
@@ -48,6 +48,7 @@ interface IOption {
     title: string;
     onPress?: () => void;
     show?: boolean;
+    onLongPress?: () => void;
 }
 
 export default function MusicItemOptions(props: IMusicItemOptionsProps) {
@@ -58,6 +59,16 @@ export default function MusicItemOptions(props: IMusicItemOptionsProps) {
 
     const downloaded = LocalMusicSheet.isLocalMusic(musicItem);
     const associatedLrc = getMediaExtraProperty(musicItem, "associatedLrc");
+    const navigate = useNavigate();
+
+    const copyText = (text: string | any) => {
+        try {
+            Clipboard.setString(text.toString());
+            Toast.success(t("toast.copiedToClipboard"));
+        } catch {
+            Toast.warn(t("toast.copiedToClipboardFailed"));
+        }
+    };
 
     const options: IOption[] = [
         {
@@ -82,26 +93,20 @@ export default function MusicItemOptions(props: IMusicItemOptionsProps) {
             icon: "user",
             title: t("panel.musicItemOptions.author", { artist: musicItem.artist }),
             onPress: () => {
-                try {
-                    Clipboard.setString(musicItem.artist.toString());
-                    Toast.success(t("toast.copiedToClipboard"));
-                } catch {
-                    Toast.warn(t("toast.copiedToClipboardFailed"));
-                }
+                hidePanel();
+                navigate(ROUTE_PATH.SEARCH_PAGE, { type: "artist", query: musicItem.artist });
             },
+            onLongPress:() => copyText(musicItem.artist),
         },
         {
             icon: "album-outline",
             show: !!musicItem.album,
             title: t("panel.musicItemOptions.album", { album: musicItem.album }),
             onPress: () => {
-                try {
-                    Clipboard.setString(musicItem.album.toString());
-                    Toast.success(t("toast.copiedToClipboard"));
-                } catch {
-                    Toast.warn(t("toast.copiedToClipboardFailed"));
-                }
+                hidePanel();
+                navigate(ROUTE_PATH.SEARCH_PAGE, { type: "album", query: musicItem.album });
             },
+            onLongPress:() => copyText(musicItem.album),
         },
         {
             icon: "motion-play",
@@ -116,6 +121,20 @@ export default function MusicItemOptions(props: IMusicItemOptionsProps) {
             title: t("musicListEditor.addToSheet"),
             onPress: () => {
                 showPanel("AddToMusicSheet", { musicItem });
+            },
+        },
+        {
+            icon: "arrow-up-tray",
+            title: t("common.upload"),
+            onPress: async () => {
+                console.log(musicItem);
+                showPanel("MusicQuality", {
+                    musicItem,
+                    type: "upload",
+                    async onQualityPress(quality) {
+                        showPanel("UploadMusicItem",{ musicItem, quality });
+                    },
+                });
             },
         },
         {
@@ -244,7 +263,14 @@ export default function MusicItemOptions(props: IMusicItemOptionsProps) {
                             placeholderSource={ImgAsset.albumDefault}
                         />
                         <View style={style.content}>
-                            <ThemeText numberOfLines={2} style={style.title}>
+                            <ThemeText numberOfLines={2} style={style.title} onPress={
+                                () => {
+                                    hidePanel();
+                                    navigate(ROUTE_PATH.SEARCH_PAGE, { type: "music", query: musicItem?.title });
+                                }
+                            }
+                            onLongPress={ ()=> copyText(musicItem?.title) }
+                            >
                                 {musicItem?.title}
                             </ThemeText>
                             <ThemeText
@@ -278,7 +304,8 @@ export default function MusicItemOptions(props: IMusicItemOptionsProps) {
                                     <ListItem
                                         withHorizontalPadding
                                         heightType="small"
-                                        onPress={item.onPress}>
+                                        onPress={item.onPress}
+                                        onLongPress={item.onLongPress}>
                                         <ListItem.ListItemIcon
                                             width={rpx(48)}
                                             icon={item.icon}

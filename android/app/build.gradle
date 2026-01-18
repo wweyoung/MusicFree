@@ -89,7 +89,7 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 
 // !! Add lines
 def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file('keystore.properties')
+def keystorePropertiesFile = file('keystore.properties')
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
@@ -125,7 +125,7 @@ android {
     namespace "fun.upup.musicfree"
 
     defaultConfig {
-        applicationId "fun.upup.musicfree"
+        applicationId "fun.upup.musicfree.kx"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode appVersionCode

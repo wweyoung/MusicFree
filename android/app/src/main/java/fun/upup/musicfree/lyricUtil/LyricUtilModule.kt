@@ -88,6 +88,7 @@ class LyricUtilModule(private val reactContext: ReactApplicationContext): ReactC
         try {
             UiThreadUtil.runOnUiThread {
                 lyricView?.hideLyricWindow()
+                lyricView = null;
             }
             promise.resolve(true)
         } catch (e: Exception) {
@@ -179,4 +180,8 @@ class LyricUtilModule(private val reactContext: ReactApplicationContext): ReactC
         }
     }
 
+    @ReactMethod
+    fun isShowStatusBar(promise: Promise) {
+        promise.resolve(lyricView != null);
+    }
 }
