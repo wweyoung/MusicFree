@@ -1,10 +1,10 @@
 import React from "react";
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import {StyleProp, StyleSheet, View, ViewStyle} from "react-native";
 import rpx from "@/utils/rpx";
 import ListItem from "../base/listItem";
 
 import LocalMusicSheet from "@/core/localMusicSheet";
-import { showPanel } from "../panels/usePanel";
+import {showPanel} from "../panels/usePanel";
 import TitleAndTag from "./titleAndTag";
 import ThemeText from "../base/themeText";
 import TrackPlayer from "@/core/trackPlayer";
@@ -92,8 +92,20 @@ export default function MusicItem(props: IMusicItemProps) {
             />
             {showMoreIcon ? (
                 <ListItem.ListItemIcon
-                    width={rpx(48)}
-                    position="none"
+                    fixedWidth={true}
+                    width={rpx(42)}
+                    position="right"
+                    icon="motion-play"
+                    onPress={() => {
+                        TrackPlayer.addNext(musicItem);
+                    }}
+                />
+            ) : null}
+            {showMoreIcon ? (
+                <ListItem.ListItemIcon
+                    fixedWidth
+                    width={rpx(42)}
+                    position="right"
                     icon="ellipsis-vertical"
                     onPress={() => {
                         showPanel("MusicItemOptions", {

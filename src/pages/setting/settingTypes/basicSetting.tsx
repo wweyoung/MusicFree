@@ -3,27 +3,27 @@ import ListItem from "@/components/base/listItem";
 import Paragraph from "@/components/base/paragraph";
 import ThemeSwitch from "@/components/base/switch";
 import ThemeText from "@/components/base/themeText";
-import { showDialog } from "@/components/dialogs/useDialog";
-import { showPanel } from "@/components/panels/usePanel";
-import { SortType } from "@/constants/commonConst.ts";
+import {showDialog} from "@/components/dialogs/useDialog";
+import {showPanel} from "@/components/panels/usePanel";
+import {SortType} from "@/constants/commonConst.ts";
 import pathConst from "@/constants/pathConst";
-import Config, { useAppConfig } from "@/core/appConfig";
-import { useI18N } from "@/core/i18n";
-import { ROUTE_PATH, useNavigate } from "@/core/router";
+import Config, {useAppConfig} from "@/core/appConfig";
+import {useI18N} from "@/core/i18n";
+import {ROUTE_PATH, useNavigate} from "@/core/router";
 import useColors from "@/hooks/useColors";
-import LyricUtil, { NativeTextAlignment } from "@/native/lyricUtil";
-import { AppConfigPropertyKey } from "@/types/core/config";
-import { clearCache, getCacheSize, sizeFormatter } from "@/utils/fileUtils";
-import { clearLog, getErrorLogContent } from "@/utils/log";
-import { qualityKeys } from "@/utils/qualities";
+import LyricUtil, {NativeTextAlignment} from "@/native/lyricUtil";
+import {AppConfigPropertyKey} from "@/types/core/config";
+import {clearCache, getCacheSize, sizeFormatter} from "@/utils/fileUtils";
+import {clearLog, getErrorLogContent} from "@/utils/log";
+import {qualityKeys} from "@/utils/qualities";
 import rpx from "@/utils/rpx";
 import Toast from "@/utils/toast";
 import Clipboard from "@react-native-clipboard/clipboard";
 import Slider from "@react-native-community/slider";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { SectionList, StyleSheet, TouchableOpacity, View } from "react-native";
-import { readdir } from "react-native-fs";
-import { FlatList, ScrollView } from "react-native-gesture-handler";
+import React, {useCallback, useEffect, useRef, useState} from "react";
+import {SectionList, StyleSheet, TouchableOpacity, View} from "react-native";
+import {readdir} from "react-native-fs";
+import {FlatList, ScrollView} from "react-native-gesture-handler";
 
 function createSwitch(
     title: string,
@@ -779,7 +779,7 @@ function LyricSetting() {
                     maximumTrackTintColor={colors.text ?? "#999999"}
                     thumbTintColor={colors.primary}
                     minimumValue={0}
-                    step={0.01}
+                    step={0.001}
                     value={leftPercent ?? 0.5}
                     maximumValue={1}
                     onValueChange={val => {
@@ -801,7 +801,7 @@ function LyricSetting() {
                     thumbTintColor={colors.primary}
                     minimumValue={0}
                     value={topPercent ?? 0}
-                    step={0.01}
+                    step={0.001}
                     maximumValue={1}
                     onValueChange={val => {
                         if (showStatusBarLyric) {
@@ -821,7 +821,7 @@ function LyricSetting() {
                     maximumTrackTintColor={colors.text ?? "#999999"}
                     thumbTintColor={colors.primary}
                     minimumValue={0}
-                    step={0.01}
+                    step={0.001}
                     value={widthPercent ?? 0.5}
                     maximumValue={1}
                     onValueChange={val => {

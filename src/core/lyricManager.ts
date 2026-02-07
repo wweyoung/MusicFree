@@ -1,22 +1,22 @@
-import { IAppConfig } from "@/types/core/config";
-import { ITrackPlayer } from "@/types/core/trackPlayer";
-import { IInjectable } from "@/types/infra";
-import LyricParser, { IParsedLrcItem } from "@/utils/lrcParser";
-import { getMediaExtraProperty, patchMediaExtra } from "@/utils/mediaExtra";
-import { isSameMediaItem } from "@/utils/mediaUtils";
+import {IAppConfig} from "@/types/core/config";
+import {ITrackPlayer} from "@/types/core/trackPlayer";
+import {IInjectable} from "@/types/infra";
+import LyricParser, {IParsedLrcItem} from "@/utils/lrcParser";
+import {getMediaExtraProperty, patchMediaExtra} from "@/utils/mediaExtra";
+import {isSameMediaItem} from "@/utils/mediaUtils";
 import minDistance from "@/utils/minDistance";
-import { atom, getDefaultStore, useAtomValue } from "jotai";
-import { Plugin } from "./pluginManager";
+import {atom, getDefaultStore, useAtomValue} from "jotai";
+import {Plugin} from "./pluginManager";
 
 import pathConst from "@/constants/pathConst";
 import LyricUtil from "@/native/lyricUtil";
-import { checkAndCreateDir } from "@/utils/fileUtils";
+import {checkAndCreateDir} from "@/utils/fileUtils";
 import PersistStatus from "@/utils/persistStatus";
 import CryptoJs from "crypto-js";
-import { unlink, writeFile } from "react-native-fs";
-import RNTrackPlayer, { Event } from "react-native-track-player";
-import { TrackPlayerEvents } from "@/core.defination/trackPlayer";
-import { IPluginManager } from "@/types/core/pluginManager";
+import {unlink, writeFile} from "react-native-fs";
+import RNTrackPlayer, {Event} from "react-native-track-player";
+import {TrackPlayerEvents} from "@/core.defination/trackPlayer";
+import {IPluginManager} from "@/types/core/pluginManager";
 
 
 interface ILyricState {
@@ -82,7 +82,7 @@ class LyricManager implements IInjectable {
             }
 
             const currentLyricItem = getDefaultStore().get(currentLyricItemAtom);
-            const newLyricItem = parser.getPosition(evt.position);
+            const newLyricItem = parser.getPosition(evt.position + 0.4);
 
             let isShowStatusBar = this.appConfig.getConfig("lyric.showStatusBarLyric");
             if (isShowStatusBar) {

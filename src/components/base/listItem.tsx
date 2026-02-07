@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, {ReactNode} from "react";
 import {
     StyleProp,
     StyleSheet,
@@ -10,16 +10,12 @@ import {
     ViewStyle,
 } from "react-native";
 import rpx from "@/utils/rpx";
-import useColors, { CustomizedColors } from "@/hooks/useColors";
+import useColors, {CustomizedColors} from "@/hooks/useColors";
 import ThemeText from "./themeText";
-import {
-    fontSizeConst,
-    fontWeightConst,
-    iconSizeConst,
-} from "@/constants/uiConst";
+import {fontSizeConst, fontWeightConst, iconSizeConst,} from "@/constants/uiConst";
 import FastImage from "./fastImage";
-import { ImageStyle } from "react-native-fast-image";
-import Icon, { IIconName } from "@/components/base/icon.tsx";
+import {ImageStyle} from "react-native-fast-image";
+import Icon, {IIconName} from "@/components/base/icon.tsx";
 
 interface IListItemProps {
     // 是否有左右边距
@@ -347,5 +343,6 @@ ListItem.ListItemIcon = ListItemIcon;
 ListItem.ListItemImage = ListItemImage;
 ListItem.ListItemText = ListItemText;
 ListItem.Content = Content;
+ListItem.styles = styles;
 
 export default ListItem;

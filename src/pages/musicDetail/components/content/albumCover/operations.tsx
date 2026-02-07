@@ -1,16 +1,16 @@
-import React, { useMemo } from "react";
-import { Image, Pressable, StyleSheet, View } from "react-native";
+import React, {useMemo} from "react";
+import {Image, Pressable, StyleSheet, View} from "react-native";
 import rpx from "@/utils/rpx";
 
 import LocalMusicSheet from "@/core/localMusicSheet";
-import { ROUTE_PATH } from "@/core/router";
-import { ImgAsset } from "@/constants/assetsConst";
+import {ROUTE_PATH} from "@/core/router";
+import {ImgAsset} from "@/constants/assetsConst";
 import Toast from "@/utils/toast";
 import toast from "@/utils/toast";
 import useOrientation from "@/hooks/useOrientation";
-import { showPanel } from "@/components/panels/usePanel";
-import TrackPlayer, { useCurrentMusic, useMusicQuality } from "@/core/trackPlayer";
-import { iconSizeConst } from "@/constants/uiConst";
+import {showPanel} from "@/components/panels/usePanel";
+import TrackPlayer, {useCurrentMusic, useMusicQuality} from "@/core/trackPlayer";
+import {iconSizeConst} from "@/constants/uiConst";
 import PersistStatus from "@/utils/persistStatus";
 import HeartIcon from "../heartIcon";
 import Icon from "@/components/base/icon.tsx";
@@ -39,6 +39,14 @@ export default function Operations() {
                 orientation === "horizontal" ? styles.horizontalWrapper : null,
             ]}>
             <HeartIcon />
+            <Icon
+                name="folder-plus"
+                size={iconSizeConst.normal}
+                color="white"
+                onPress={() => {
+                    showPanel("AddToMusicSheet", { musicItem });
+                }}
+            />
             <Pressable
                 onPress={() => {
                     if (!musicItem) {
@@ -76,25 +84,7 @@ export default function Operations() {
                     }
                 }}
             />
-            <Pressable
-                onPress={() => {
-                    if (!musicItem) {
-                        return;
-                    }
-                    showPanel("PlayRate", {
-                        async onRatePress(newRate) {
-                            if (rate !== newRate) {
-                                try {
-                                    await TrackPlayer.setRate(newRate / 100);
-                                    PersistStatus.set("music.rate", newRate);
-                                } catch { }
-                            }
-                        },
-                    });
-                }}>
-                <Image source={ImgAsset.rate[rate!]} style={styles.quality} />
-            </Pressable>
-            <Icon
+            {supportComment && <Icon
                 name="chat-bubble-oval-left-ellipsis"
                 size={iconSizeConst.normal}
                 color="white"
@@ -110,7 +100,7 @@ export default function Operations() {
                         });
                     }
                 }}
-            />
+            />}
             <Icon
                 name="ellipsis-vertical"
                 size={iconSizeConst.normal}

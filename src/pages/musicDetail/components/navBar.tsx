@@ -1,18 +1,32 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, {useMemo} from "react";
+import {StyleSheet, Text, View} from "react-native";
 import rpx from "@/utils/rpx";
-import { useNavigation } from "@react-navigation/native";
+import {useNavigation} from "@react-navigation/native";
 import Tag from "@/components/base/tag";
-import { fontSizeConst, fontWeightConst } from "@/constants/uiConst";
+import {fontSizeConst, fontWeightConst} from "@/constants/uiConst";
 import Share from "react-native-share";
-import { B64Asset } from "@/constants/assetsConst";
+import {B64Asset} from "@/constants/assetsConst";
 import IconButton from "@/components/base/iconButton";
-import { useCurrentMusic } from "@/core/trackPlayer";
+import {useCurrentMusic} from "@/core/trackPlayer";
+import {ROUTE_PATH, useNavigate} from "@/core/router";
+import ScrollLineView from "@/components/base/scrollLineView";
 
 export default function NavBar() {
     const navigation = useNavigation();
     const musicItem = useCurrentMusic();
     // const {showShare} = useShare();
+    const navigate = useNavigate();
+
+    const titleMemo = useMemo(()=>{
+        return (
+            <ScrollLineView sleepTime={3000}>
+                <Text numberOfLines={1} style={styles.headerTitleText}
+                      onPress={()=>navigate(ROUTE_PATH.SEARCH_PAGE, { type: "music", query: musicItem?.title })}>
+                    {musicItem?.title ?? "--"}
+                </Text>
+            </ScrollLineView>
+        )
+    }, [musicItem?.title])
 
     return (
         <View style={styles.container}>
@@ -26,11 +40,10 @@ export default function NavBar() {
                 }}
             />
             <View style={styles.headerContent}>
-                <Text numberOfLines={1} style={styles.headerTitleText}>
-                    {musicItem?.title ?? "--"}
-                </Text>
+                {titleMemo}
                 <View style={styles.headerDesc}>
-                    <Text style={styles.headerArtistText} numberOfLines={1}>
+                    <Text style={styles.headerArtistText} numberOfLines={1}
+                          onPress={()=>navigate(ROUTE_PATH.SEARCH_PAGE, { type: "artist", query: musicItem?.artist })}>
                         {musicItem?.artist}
                     </Text>
                     {musicItem?.platform ? (

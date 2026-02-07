@@ -1,43 +1,75 @@
-import React, { memo, useLayoutEffect, useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, {memo, useLayoutEffect, useMemo} from "react";
+import {StyleSheet, View} from "react-native";
 import rpx from "@/utils/rpx";
 import FastImage from "../base/fastImage";
-import { ImgAsset } from "@/constants/assetsConst";
+import {ImgAsset} from "@/constants/assetsConst";
 import Color from "color";
 import ThemeText from "../base/themeText";
 import useColors from "@/hooks/useColors";
-import { ROUTE_PATH, useNavigate } from "@/core/router";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import TrackPlayer, { usePlayList } from "@/core/trackPlayer";
-import Animated, {
-    SharedValue,
-    runOnJS,
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
-} from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { timingConfig } from "@/constants/commonConst";
+import {ROUTE_PATH, useNavigate} from "@/core/router";
+import {Gesture, GestureDetector} from "react-native-gesture-handler";
+import TrackPlayer, {useMusicState, usePlayList} from "@/core/trackPlayer";
+import Animated, {runOnJS, SharedValue, useAnimatedStyle, useSharedValue, withTiming,} from "react-native-reanimated";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {timingConfig} from "@/constants/commonConst";
+import {useCurrentLyricItem} from "@/core/lyricManager";
+import globalStyle from "@/constants/globalStyle";
+import ScrollLineView from "@/components/base/scrollLineView";
+import {musicIsPaused} from "@/utils/trackUtils";
 
 interface IBarMusicItemProps {
     musicItem: IMusic.IMusicItem | null;
     activeIndex: number; // 当前展示的是0/1/2
     transformSharedValue: SharedValue<number>;
 }
+
 function _BarMusicItem(props: IBarMusicItemProps) {
-    const { musicItem, activeIndex, transformSharedValue } = props;
+    const {musicItem, activeIndex, transformSharedValue} = props;
     const colors = useColors();
     const safeAreaInsets = useSafeAreaInsets();
-
+    const currentLyricItem = useCurrentLyricItem();
     const animatedStyles = useAnimatedStyle(() => {
         return {
             left: `${(transformSharedValue.value + activeIndex) * 100}%`,
         };
     }, [activeIndex]);
+    const musicState = useMusicState();
+    const isPaused = musicIsPaused(musicState);
 
     if (!musicItem) {
         return null;
     }
+
+    // 用 useMemo 缓存 children，只有依赖数组中的变量变化时，才重新创建 children
+    const titleMemo = useMemo(() => {
+        return (<ScrollLineView scrollType={isPaused || activeIndex != 0 ? 'none' : 'continue'} speed={0.8} sleepTime={3000}>
+            <ThemeText fontSize="content" fontColor="musicBarText">
+                {musicItem?.title}
+            </ThemeText>
+            {musicItem?.artist && (
+                <ThemeText
+                    fontSize="subTitle"
+                    color={Color(colors.musicBarText)
+                        .alpha(0.6)
+                        .toString()}>
+                    {" "}
+                    - {musicItem.artist}
+                </ThemeText>
+            )}
+        </ScrollLineView>);
+    }, [musicItem?.title, musicItem?.artist, isPaused, activeIndex]); // 空依赖数组 → 仅挂载时创建一次，引用永久稳定
+
+    // 用 useMemo 缓存 children，只有依赖数组中的变量变化时，才重新创建 children
+    const lrcMemo = useMemo(() => {
+        return (<ScrollLineView scrollType={isPaused ? 'none' : 'once'} duration={currentLyricItem?.duration}>
+            {currentLyricItem && (
+                <ThemeText fontSize="subTitle" fontColor="musicBarText" numberOfLines={1}>
+                    {currentLyricItem?.lrc}
+                </ThemeText>
+            )}
+        </ScrollLineView>);
+    }, [currentLyricItem, currentLyricItem?.lrc, isPaused]); // 空依赖数组 → 仅挂载时创建一次，引用永久稳定
+
 
     return (
         <Animated.View
@@ -53,25 +85,12 @@ function _BarMusicItem(props: IBarMusicItemProps) {
                 source={musicItem.artwork}
                 placeholderSource={ImgAsset.albumDefault}
             />
-            <Text
-                ellipsizeMode="tail"
-                accessible={false}
-                style={styles.textWrapper}
-                numberOfLines={1}>
-                <ThemeText fontSize="content" fontColor="musicBarText">
-                    {musicItem?.title}
-                </ThemeText>
-                {musicItem?.artist && (
-                    <ThemeText
-                        fontSize="description"
-                        color={Color(colors.musicBarText)
-                            .alpha(0.6)
-                            .toString()}>
-                        {" "}
-                        -{musicItem.artist}
-                    </ThemeText>
+            <View style={[globalStyle.fwflex1, {gap: rpx(12)}]}>
+                {titleMemo}
+                {activeIndex === 0 && (
+                    lrcMemo
                 )}
-            </Text>
+            </View>
         </Animated.View>
     );
 }
@@ -91,8 +110,8 @@ const styles = StyleSheet.create({
         position: "absolute",
     },
     textWrapper: {
-        flexGrow: 1,
-        flexShrink: 1,
+        // flexGrow: 1,
+        // flexShrink: 1,
     },
     artworkImg: {
         width: rpx(96),
@@ -100,6 +119,9 @@ const styles = StyleSheet.create({
         borderRadius: rpx(48),
         marginRight: rpx(24),
     },
+    lyric: {
+        width: "100%"
+    }
 });
 
 interface IMusicInfoProps {
@@ -116,7 +138,7 @@ function skipMusicItem(direction: number) {
 }
 
 export default function MusicInfo(props: IMusicInfoProps) {
-    const { musicItem } = props;
+    const {musicItem} = props;
     const navigate = useNavigate();
     const playLists = usePlayList();
     const siblingMusicItems = useMemo(() => {

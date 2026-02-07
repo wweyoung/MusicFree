@@ -54,6 +54,9 @@ react {
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     // hermesFlags = ["-O", "-output-source-map"]
 
+    //   关键修改1：明确指定 Hermes 编译优化参数，提升字节码效率
+    hermesFlags = ["-O", "-output-source-map"]
+
     /* Autolinking */
     autolinkLibrariesWithApp()
 
@@ -72,7 +75,7 @@ react {
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
@@ -139,7 +142,7 @@ android {
             keyPassword 'android'
         }
         // !! Add lines
-         release {
+        release {
             storeFile file(keystoreProperties['RELEASE_STORE_FILE'])
             storePassword keystoreProperties['RELEASE_STORE_PASSWORD']
             keyAlias keystoreProperties['RELEASE_KEY_ALIAS']
@@ -147,12 +150,12 @@ android {
         }
     }
     splits {
-            abi {
-                reset()
-                enable true
-                universalApk true
-                include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
-            }
+        abi {
+            reset()
+            enable true
+            universalApk false
+            include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
     }
 
 
@@ -166,7 +169,9 @@ android {
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            // 开启资源压缩，移除无用图片/XML等资源
+            shrinkResources true
         }
     }
 }

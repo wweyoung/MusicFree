@@ -1,11 +1,11 @@
 import "react-native-get-random-values";
 
-import { getCurrentDialog, showDialog } from "@/components/dialogs/useDialog.ts";
-import { ImgAsset } from "@/constants/assetsConst";
-import { emptyFunction, localPluginHash, supportLocalMediaType } from "@/constants/commonConst";
+import {getCurrentDialog, showDialog} from "@/components/dialogs/useDialog.ts";
+import {ImgAsset} from "@/constants/assetsConst";
+import {emptyFunction, localPluginHash, supportLocalMediaType} from "@/constants/commonConst";
 import pathConst from "@/constants/pathConst";
 import Config from "@/core/appConfig";
-import downloader, { DownloadFailReason, DownloaderEvent } from "@/core/downloader";
+import downloader, {DownloaderEvent, DownloadFailReason} from "@/core/downloader";
 import LocalMusicSheet from "@/core/localMusicSheet";
 import lyricManager from "@/core/lyricManager";
 import musicHistory from "@/core/musicHistory";
@@ -14,18 +14,19 @@ import PluginManager from "@/core/pluginManager";
 import Theme from "@/core/theme";
 import TrackPlayer from "@/core/trackPlayer";
 import NativeUtils from "@/native/utils";
-import { checkAndCreateDir } from "@/utils/fileUtils";
-import { errorLog, trace } from "@/utils/log";
-import { IPerfLogger, perfLogger } from "@/utils/perfLogger";
+import {checkAndCreateDir} from "@/utils/fileUtils";
+import {errorLog, trace} from "@/utils/log";
+import {IPerfLogger, perfLogger} from "@/utils/perfLogger";
 import PersistStatus from "@/utils/persistStatus";
 import Toast from "@/utils/toast";
 import * as SplashScreen from "expo-splash-screen";
-import {  Linking, Platform } from "react-native";
-import { PERMISSIONS, check, request } from "react-native-permissions";
-import RNTrackPlayer, { AppKilledPlaybackBehavior, Capability } from "react-native-track-player";
+import {Linking, Platform} from "react-native";
+import {check, PERMISSIONS, request} from "react-native-permissions";
+import RNTrackPlayer, {AppKilledPlaybackBehavior, Capability} from "react-native-track-player";
 import i18n from "@/core/i18n";
 import bootstrapAtom from "./bootstrap.atom";
-import { getDefaultStore } from "jotai";
+import {getDefaultStore} from "jotai";
+import {iconMap} from "@/components/base/icon";
 
 
 // 依赖管理
@@ -38,6 +39,7 @@ MusicSheet.injectDependencies(Config);
 
 
 async function bootstrapImpl() {
+    trace('Hermes 启用状态：', !!global.HermesInternal);
     await SplashScreen.preventAutoHideAsync()
         .then(result =>
             console.log(
@@ -125,7 +127,7 @@ async function bootstrapImpl() {
 
     i18n.setup();
     logger.mark("语言模块初始化完成");
-    
+
     ErrorUtils.setGlobalHandler(error => {
         errorLog("未捕获的错误", error);
     });
@@ -163,20 +165,18 @@ export async function initTrackPlayer(logger?: IPerfLogger) {
     }
     logger?.mark("加载播放器");
 
-    const capabilities = Config.getConfig("basic.showExitOnNotification")
-        ? [
-            Capability.Play,
-            Capability.Pause,
-            Capability.SkipToNext,
-            Capability.SkipToPrevious,
-            Capability.Stop,
-        ]
-        : [
-            Capability.Play,
-            Capability.Pause,
-            Capability.SkipToNext,
-            Capability.SkipToPrevious,
-        ];
+    let capabilities = [
+        Capability.Play,
+        Capability.Pause,
+        Capability.SkipToNext,
+        Capability.SkipToPrevious,
+        // Capability.Custom
+        // Capability.Like,
+        // Capability.Dislike
+    ];
+    if (Config.getConfig("basic.showExitOnNotification")) {
+        capabilities.push(Capability.Stop);
+    }
     await RNTrackPlayer.updateOptions({
         icon: ImgAsset.logoTransparent,
         progressUpdateEventInterval: 1,
@@ -188,6 +188,13 @@ export async function initTrackPlayer(logger?: IPerfLogger) {
         capabilities: capabilities,
         compactCapabilities: capabilities,
         notificationCapabilities: [...capabilities, Capability.SeekTo],
+        customActions: [
+            {
+                id: 'action_favorite',
+                title: '收藏',
+                icon: iconMap.heart, // 已准备的原生图标
+            }
+        ]
     });
     logger?.mark("播放器初始化完成");
     trace("播放器初始化完成");

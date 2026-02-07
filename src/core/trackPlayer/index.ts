@@ -1,25 +1,18 @@
-import { getCurrentDialog, showDialog } from "@/components/dialogs/useDialog";
-import {
-    internalFakeSoundKey,
-    sortIndexSymbol,
-    timeStampSymbol,
-} from "@/constants/commonConst";
-import { MusicRepeatMode } from "@/constants/repeatModeConst";
+import {getCurrentDialog, showDialog} from "@/components/dialogs/useDialog";
+import {internalFakeSoundKey, sortIndexSymbol, timeStampSymbol,} from "@/constants/commonConst";
+import {MusicRepeatMode} from "@/constants/repeatModeConst";
 import delay from "@/utils/delay";
 import getUrlExt from "@/utils/getUrlExt";
-import { errorLog, trace } from "@/utils/log";
-import { createMediaIndexMap } from "@/utils/mediaIndexMap";
-import {
-    getLocalPath,
-    isSameMediaItem,
-} from "@/utils/mediaUtils";
+import {errorLog, trace} from "@/utils/log";
+import {createMediaIndexMap} from "@/utils/mediaIndexMap";
+import {getLocalPath, isSameMediaItem,} from "@/utils/mediaUtils";
 import Network from "@/utils/network";
 import PersistStatus from "@/utils/persistStatus";
-import { getQualityOrder } from "@/utils/qualities";
-import { musicIsPaused } from "@/utils/trackUtils";
+import {getQualityOrder} from "@/utils/qualities";
+import {musicIsPaused} from "@/utils/trackUtils";
 import EventEmitter from "eventemitter3";
-import { produce } from "immer";
-import { atom, getDefaultStore, useAtomValue } from "jotai";
+import {produce} from "immer";
+import {atom, getDefaultStore, useAtomValue} from "jotai";
 import shuffle from "lodash.shuffle";
 import ReactNativeTrackPlayer, {
     Event,
@@ -31,15 +24,14 @@ import ReactNativeTrackPlayer, {
 } from "react-native-track-player";
 import LocalMusicSheet from "../localMusicSheet";
 
-import { TrackPlayerEvents } from "@/core.defination/trackPlayer";
-import type { IAppConfig } from "@/types/core/config";
-import type { IMusicHistory } from "@/types/core/musicHistory";
-import { ITrackPlayer } from "@/types/core/trackPlayer/index";
+import {TrackPlayerEvents} from "@/core.defination/trackPlayer";
+import type {IAppConfig} from "@/types/core/config";
+import type {IMusicHistory} from "@/types/core/musicHistory";
+import {ITrackPlayer} from "@/types/core/trackPlayer/index";
 import minDistance from "@/utils/minDistance";
-import { IPluginManager } from "@/types/core/pluginManager";
-import { ImgAsset } from "@/constants/assetsConst";
-import { resolveImportedAssetOrPath } from "@/utils/fileUtils";
-
+import {IPluginManager} from "@/types/core/pluginManager";
+import {ImgAsset} from "@/constants/assetsConst";
+import {resolveImportedAssetOrPath} from "@/utils/fileUtils";
 
 
 const currentMusicAtom = atom<IMusic.IMusicItem | null>(null);
@@ -489,9 +481,11 @@ class TrackPlayer extends EventEmitter<{
                             quality,
                         )) ?? null;
                     // 5.3.1 获取到真实源
-                    if (source) {
+                    if (source?.url) {
                         this.setQuality(quality);
                         break;
+                    } else {
+                        source = null;
                     }
                 } else {
                     // 5.3.2 已经切换到其他歌曲了，
@@ -537,9 +531,11 @@ class TrackPlayer extends EventEmitter<{
                                             quality,
                                         )) ?? null;
                                     // 5.4.1 获取到真实源
-                                    if (source) {
+                                    if (source?.url) {
                                         this.setQuality(quality);
                                         break;
+                                    } else {
+                                        source = null;
                                     }
                                 } else {
                                     // 5.4.2 已经切换到其他歌曲了，

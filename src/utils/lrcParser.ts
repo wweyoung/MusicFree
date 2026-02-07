@@ -19,6 +19,8 @@ export interface IParsedLrcItem {
     translation?: string;
     /** 位置 */
     index: number;
+    /* 时长 */
+    duration: number
 }
 
 export default class LyricParser {
@@ -222,6 +224,7 @@ export default class LyricParser {
                     time: this.parseTime(rawTimes[i]),
                     lrc,
                     index: j,
+                    duration: 0
                 });
             }
             rawLrcs.shift();
@@ -235,9 +238,12 @@ export default class LyricParser {
                 time: 0,
                 lrc: _,
                 index,
+                duration: 0
             }));
         }
-
+        for (let i = 0; i < lrcItems.length - 1; i++) {
+            lrcItems[i].duration = lrcItems[i + 1].time - lrcItems[i].time;
+        }
         return {
             lrcItems,
             meta,

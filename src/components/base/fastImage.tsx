@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { ImageRequireSource } from "react-native";
-import FastImage, { FastImageProps } from "react-native-fast-image";
+import React, {useEffect, useState} from "react";
+import {ImageRequireSource} from "react-native";
+import FastImage, {FastImageProps} from "react-native-fast-image";
 
 interface IFastImageProps {
     style: FastImageProps["style"];
@@ -15,7 +15,14 @@ export default function (props: IFastImageProps) {
 
     let realSource: FastImageProps["source"];
     if (typeof source === "string") {
-        realSource = { uri: source };
+        let url = new URL(source);
+        realSource = {
+            uri: source,
+            headers: {
+                'Host': url.host,
+                'Referer': url.origin
+            }
+        };
         if (source.length === 0) {
             realSource = placeholderSource;
         }

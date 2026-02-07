@@ -1,24 +1,24 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { LayoutRectangle, StyleSheet, Text, View } from "react-native";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {LayoutRectangle, StyleSheet, Text, View} from "react-native";
 import rpx from "@/utils/rpx";
 import useDelayFalsy from "@/hooks/useDelayFalsy";
-import { FlatList, Gesture, GestureDetector, TapGestureHandler } from "react-native-gesture-handler";
-import { fontSizeConst } from "@/constants/uiConst";
+import {FlatList, Gesture, GestureDetector, TapGestureHandler} from "react-native-gesture-handler";
+import {fontSizeConst} from "@/constants/uiConst";
 import Loading from "@/components/base/loading";
 import globalStyle from "@/constants/globalStyle";
-import { showPanel } from "@/components/panels/usePanel";
-import TrackPlayer, { useCurrentMusic, useMusicState } from "@/core/trackPlayer";
-import { musicIsPaused } from "@/utils/trackUtils";
+import {showPanel} from "@/components/panels/usePanel";
+import TrackPlayer, {useCurrentMusic, useMusicState} from "@/core/trackPlayer";
+import {musicIsPaused} from "@/utils/trackUtils";
 import delay from "@/utils/delay";
 import DraggingTime from "./draggingTime";
 import LyricItemComponent from "./lyricItem";
 import PersistStatus from "@/utils/persistStatus";
 import LyricOperations from "./lyricOperations";
-import { IParsedLrcItem } from "@/utils/lrcParser";
-import { IconButtonWithGesture } from "@/components/base/iconButton.tsx";
-import { getMediaExtraProperty } from "@/utils/mediaExtra";
-import lyricManager, { useCurrentLyricItem, useLyricState } from "@/core/lyricManager";
-import { useI18N } from "@/core/i18n";
+import {IParsedLrcItem} from "@/utils/lrcParser";
+import {IconButtonWithGesture} from "@/components/base/iconButton.tsx";
+import {getMediaExtraProperty} from "@/utils/mediaExtra";
+import lyricManager, {useCurrentLyricItem, useLyricState} from "@/core/lyricManager";
+import {useI18N} from "@/core/i18n";
 
 const ITEM_HEIGHT = rpx(92);
 
@@ -72,7 +72,7 @@ export default function Lyric(props: IProps) {
     const dragShownRef = useRef(false);
 
     // 组件是否挂载
-    const isMountedRef = useRef(true);
+    const isMountedRef = useRef(false);
 
     // 用来缓存高度
     const itemHeightsRef = useRef<IItemHeights>({});
@@ -99,38 +99,25 @@ export default function Lyric(props: IProps) {
 
     // 滚到当前item
     const scrollToCurrentLrcItem = useCallback(() => {
+        console.log("scrollToCurrentLrcItem")
         if (!listRef.current) {
             return;
         }
-        const currentLyricItem = lyricManager.currentLyricItem;
-        const currentLyrics = lyricManager.lyricState?.lyrics;
-        if (currentLyricItem?.index === -1 || !currentLyricItem) {
-            listRef.current?.scrollToIndex({
-                index: 0,
-                viewPosition: 0.5,
-            });
-        } else {
-            listRef.current?.scrollToIndex({
-                index: Math.min(currentLyricItem.index ?? 0, currentLyrics.length - 1),
-                viewPosition: 0.5,
-            });
-        }
+        scrollToIndex();
     }, []);
 
-    const delayedScrollToCurrentLrcItem = useMemo(() => {
+    const delayedScrollToCurrentLrcItem = () => {
         let sto: number;
+        console.log("delayedScrollToCurrentLrcItem")
 
-        return () => {
-            if (sto) {
-                clearTimeout(sto);
-            }
-            sto = setTimeout(() => {
-                if (isMountedRef.current) {
-                    scrollToCurrentLrcItem();
-                }
-            }, 200) as any;
-        };
-    }, []);
+        if (sto) {
+            clearTimeout(sto);
+        }
+        sto = setTimeout(() => {
+            console.log("scrollToCurrentLrcItem 111")
+            scrollToIndex(currentLrcItem?.index, false);
+        }, 500) as any;
+    };
 
     useEffect(() => {
         // 暂停且拖拽才返回
@@ -142,26 +129,25 @@ export default function Lyric(props: IProps) {
         ) {
             return;
         }
-        if (currentLrcItem?.index === -1 || !currentLrcItem) {
-            listRef.current?.scrollToIndex({
-                index: 0,
-                viewPosition: 0.5,
-            });
-        } else {
-            listRef.current?.scrollToIndex({
-                index: Math.min(currentLrcItem.index ?? 0, lyrics.length - 1),
-                viewPosition: 0.5,
-            });
-        }
+        scrollToIndex(currentLrcItem?.index, true);
         // 音乐暂停状态不应该影响到滑动，所以不放在依赖里，但是这样写不好。。
     }, [currentLrcItem, lyrics, draggingIndex]);
 
     useEffect(() => {
         scrollToCurrentLrcItem();
         return () => {
-            isMountedRef.current = false;
+            isMountedRef.current = true;
         };
     }, []);
+
+    const scrollToIndex = (index = currentLrcItem?.index, animated?) => {
+        index = Math.min(index ?? 0, lyrics.length - 1);
+        listRef.current?.scrollToIndex({
+            index,
+            viewPosition: 0.5,
+            animated
+        });
+    }
 
     // 开始滚动时拖拽生效
     const onScrollBeginDrag = () => {
@@ -236,18 +222,11 @@ export default function Lyric(props: IProps) {
                             onLayout={e => {
                                 setLayout(e.nativeEvent.layout);
                             }}
-                            viewabilityConfig={{
-                                itemVisiblePercentThreshold: 100,
-                            }}
-                            onScrollToIndexFailed={({ index }) => {
-                                delay(120).then(() => {
-                                    listRef.current?.scrollToIndex({
-                                        index: Math.min(
-                                            index ?? 0,
-                                            lyrics.length - 1,
-                                        ),
-                                        viewPosition: 0.5,
-                                    });
+
+                            windowSize={200}
+                            onScrollToIndexFailed={({ index, highestMeasuredFrameIndex }) => {
+                                delay(1).then(() => {
+                                    scrollToIndex(index, false);
                                 });
                             }}
                             fadingEdgeLength={120}
@@ -294,6 +273,7 @@ export default function Lyric(props: IProps) {
                             style={styles.wrapper}
                             data={lyrics}
                             initialNumToRender={30}
+                            maxToRenderPerBatch={15}
                             overScrollMode="never"
                             extraData={currentLrcItem}
                             renderItem={({ item, index }) => {

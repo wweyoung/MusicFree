@@ -2,20 +2,21 @@ import Empty from "@/components/base/empty";
 import IconButton from "@/components/base/iconButton";
 import ListItem from "@/components/base/listItem";
 import ThemeText from "@/components/base/themeText";
-import { showDialog } from "@/components/dialogs/useDialog";
-import { showPanel } from "@/components/panels/usePanel";
-import { ImgAsset } from "@/constants/assetsConst";
-import { localPluginPlatform } from "@/constants/commonConst";
-import { useI18N } from "@/core/i18n";
-import MusicSheet, { useSheetsBase, useStarredSheets } from "@/core/musicSheet";
-import { ROUTE_PATH, useNavigate } from "@/core/router";
+import {showDialog} from "@/components/dialogs/useDialog";
+import {showPanel} from "@/components/panels/usePanel";
+import {ImgAsset} from "@/constants/assetsConst";
+import {localPluginPlatform} from "@/constants/commonConst";
+import {useI18N} from "@/core/i18n";
+import MusicSheet, {useSheetsBase, useStarredSheets} from "@/core/musicSheet";
+import {ROUTE_PATH, useNavigate} from "@/core/router";
 import useColors from "@/hooks/useColors";
 import rpx from "@/utils/rpx";
 import Toast from "@/utils/toast";
-import { FlashList } from "@shopify/flash-list";
-import React, { useMemo, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import {FlashList} from "@shopify/flash-list";
+import React, {useMemo, useState} from "react";
+import {View} from "react-native";
+import {TouchableWithoutFeedback} from "react-native-gesture-handler";
+import Tag from "@/components/base/tag";
 
 export default function Sheets() {
     const [index, setIndex] = useState(0);
@@ -122,8 +123,6 @@ export default function Sheets() {
                     const isLocalSheet = !(
                         sheet.platform && sheet.platform !== localPluginPlatform
                     );
-
-
                     return (
                         <ListItem
                             key={`${sheet.id}`}
@@ -152,9 +151,14 @@ export default function Sheets() {
                             <ListItem.Content
                                 title={sheet.title}
                                 description={
-                                    isLocalSheet
-                                        ? t("home.songCount", { count: sheet.worksNum })
-                                        : `${sheet.artist ?? ""}`
+                                    <ThemeText
+                                        numberOfLines={1}
+                                        fontSize="description"
+                                        fontColor="textSecondary"
+                                        style={[ListItem.styles.contentDesc]}>
+                                        {!isLocalSheet && sheet?.platform && <Tag tagName={sheet?.platform}/>}
+                                        {(sheet?.worksNum || sheet?.worksNum == 0) && <Tag tagName={t("home.songCount", { count: sheet.worksNum })}/>}
+                                    </ThemeText>
                                 }
                             />
                             {sheet.id !== MusicSheet.defaultSheet.id ? (

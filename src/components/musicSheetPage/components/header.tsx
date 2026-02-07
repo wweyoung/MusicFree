@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import React, {useState} from "react";
+import {Pressable, StyleSheet, Text, View} from "react-native";
 import rpx from "@/utils/rpx";
 import ThemeText from "@/components/base/themeText";
-import { ImgAsset } from "@/constants/assetsConst";
+import {ImgAsset} from "@/constants/assetsConst";
 import FastImage from "@/components/base/fastImage";
 import PlayAllBar from "@/components/base/playAllBar";
 import useColors from "@/hooks/useColors";
+import Tag from "@/components/base/tag";
 
 interface IHeaderProps {
     musicSheet: IMusic.IMusicSheetItem | null;
@@ -39,6 +40,9 @@ export default function Header(props: IHeaderProps) {
                         <ThemeText numberOfLines={3}>
                             {musicSheet?.title}
                         </ThemeText>
+                        <Text>
+                            <Tag tagName={musicSheet?.platform}/>
+                        </Text>
                         <ThemeText
                             fontColor="textSecondary"
                             fontSize="description">
@@ -99,6 +103,7 @@ const style = StyleSheet.create({
         height: rpx(140),
         paddingHorizontal: rpx(36),
         justifyContent: "space-between",
+        gap: rpx(10)
     },
     divider: {
         marginVertical: rpx(18),

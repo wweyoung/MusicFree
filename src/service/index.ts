@@ -1,8 +1,9 @@
 import Config from "@/core/appConfig";
-import RNTrackPlayer, { Event, State } from "react-native-track-player";
+import RNTrackPlayer, {Event, State} from "react-native-track-player";
 import TrackPlayer from "@/core/trackPlayer";
-import { musicIsPaused } from "@/utils/trackUtils";
+import {musicIsPaused} from "@/utils/trackUtils";
 import PersistStatus from "@/utils/persistStatus";
+import {trace} from "@/utils/log";
 
 let resumeState: State | null;
 module.exports = async function () {
@@ -66,4 +67,18 @@ module.exports = async function () {
     RNTrackPlayer.addEventListener(Event.RemoteSeek, async evt => {
         TrackPlayer.seekTo(evt.position);
     });
+
+    RNTrackPlayer.addEventListener('remote-custom-action', async evt => {
+        trace(evt);
+        if (evt.action === 'action_favorite') {
+
+        }
+    });
+
+    // RNTrackPlayer.addEventListener('remote-action', async evt => {
+    //     trace(evt);
+    //     if (evt.type === Event.Like || evt.type === 'like') {
+    //
+    //     }
+    // });
 };

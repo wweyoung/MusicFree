@@ -1,36 +1,37 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import {StyleSheet, View} from "react-native";
 import rpx from "@/utils/rpx";
 import ListItem from "@/components/base/listItem";
 import ThemeText from "@/components/base/themeText";
-import { ImgAsset } from "@/constants/assetsConst";
+import {ImgAsset} from "@/constants/assetsConst";
 import Clipboard from "@react-native-clipboard/clipboard";
 
-import { getMediaUniqueKey } from "@/utils/mediaUtils";
+import {getMediaUniqueKey} from "@/utils/mediaUtils";
 import FastImage from "@/components/base/fastImage";
 import Toast from "@/utils/toast";
 import LocalMusicSheet from "@/core/localMusicSheet";
-import { localMusicSheetId, musicHistorySheetId } from "@/constants/commonConst";
-import { ROUTE_PATH, useNavigate } from "@/core/router";
+import {localMusicSheetId, musicHistorySheetId} from "@/constants/commonConst";
+import {ROUTE_PATH, useNavigate} from "@/core/router";
 
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 import PanelBase from "../base/panelBase";
-import { FlatList } from "react-native-gesture-handler";
+import {FlatList} from "react-native-gesture-handler";
 import musicHistory from "@/core/musicHistory";
-import { showDialog } from "@/components/dialogs/useDialog";
-import { hidePanel, showPanel } from "../usePanel";
+import {showDialog} from "@/components/dialogs/useDialog";
+import {hidePanel, showPanel} from "../usePanel";
 import Divider from "@/components/base/divider";
-import { iconSizeConst } from "@/constants/uiConst";
+import {iconSizeConst} from "@/constants/uiConst";
 import Config from "@/core/appConfig";
 import TrackPlayer from "@/core/trackPlayer";
 import mediaCache from "@/core/mediaCache";
-import { IIconName } from "@/components/base/icon.tsx";
+import {IIconName} from "@/components/base/icon.tsx";
 import MusicSheet from "@/core/musicSheet";
 import downloader from "@/core/downloader";
-import { getMediaExtraProperty } from "@/utils/mediaExtra";
+import {getMediaExtraProperty} from "@/utils/mediaExtra";
 import lyricManager from "@/core/lyricManager";
-import { useI18N } from "@/core/i18n";
+import {useI18N} from "@/core/i18n";
 import pluginManager from "@/core/pluginManager";
+import PersistStatus from "@/utils/persistStatus";
 
 interface IMusicItemOptionsProps {
     /** 歌曲信息 */
@@ -69,6 +70,7 @@ export default function MusicItemOptions(props: IMusicItemOptionsProps) {
             Toast.warn(t("toast.copiedToClipboardFailed"));
         }
     };
+    const rate = PersistStatus.useValue("music.rate", 100);
 
     const options: IOption[] = [
         {
@@ -114,6 +116,7 @@ export default function MusicItemOptions(props: IMusicItemOptionsProps) {
             onPress: () => {
                 TrackPlayer.addNext(musicItem);
                 hidePanel();
+                Toast.success(t("toast.addToNextPlay"));
             },
         },
         {
@@ -240,6 +243,22 @@ export default function MusicItemOptions(props: IMusicItemOptionsProps) {
             show: from === ROUTE_PATH.MUSIC_DETAIL,
             onPress: () => {
                 showPanel("TimingClose");
+            },
+        },
+        {
+            icon: "play-rate",
+            title: t("panel.playRate.title")+': ' + (rate / 100) + 'X',
+            onPress: () => {
+                showPanel("PlayRate", {
+                    async onRatePress(newRate) {
+                        if (rate !== newRate) {
+                            try {
+                                await TrackPlayer.setRate(newRate / 100);
+                                PersistStatus.set("music.rate", newRate);
+                            } catch { }
+                        }
+                    },
+                });
             },
         },
         {

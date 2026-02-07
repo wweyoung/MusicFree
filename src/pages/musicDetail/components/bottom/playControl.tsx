@@ -1,22 +1,20 @@
 import repeatModeConst from "@/constants/repeatModeConst";
 import rpx from "@/utils/rpx";
 import React from "react";
-import { InteractionManager, StyleSheet, View } from "react-native";
+import {InteractionManager, StyleSheet, View} from "react-native";
 
 import Icon from "@/components/base/icon.tsx";
-import { showPanel } from "@/components/panels/usePanel";
-import TrackPlayer, { useMusicState, useRepeatMode } from "@/core/trackPlayer";
+import TrackPlayer, {useMusicState, useRepeatMode} from "@/core/trackPlayer";
 import useOrientation from "@/hooks/useOrientation";
 import delay from "@/utils/delay";
-import { musicIsPaused } from "@/utils/trackUtils";
+import {musicIsPaused} from "@/utils/trackUtils";
+import PlayListIcon from "@/components/musicBar/playListIcon";
 
 export default function () {
     const repeatMode = useRepeatMode();
     const musicState = useMusicState();
 
     const orientation = useOrientation();
-
-    console.log(repeatMode, repeatModeConst[repeatMode]);
 
     return (
         <>
@@ -68,14 +66,7 @@ export default function () {
                         TrackPlayer.skipToNext();
                     }}
                 />
-                <Icon
-                    color={"white"}
-                    name={"playlist"}
-                    size={rpx(56)}
-                    onPress={() => {
-                        showPanel("PlayList");
-                    }}
-                />
+                <PlayListIcon color={"white"}/>
             </View>
         </>
     );
