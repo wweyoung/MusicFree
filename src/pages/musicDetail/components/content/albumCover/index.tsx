@@ -28,6 +28,7 @@ export default function AlbumCover(props: IProps) {
         "lyric.showTranslation",
         false,
     );
+    const detailFontSize = PersistStatus.useValue("lyric.detailFontSize");
 
     const artworkStyle = useMemo(() => {
         if (orientation === "vertical") {

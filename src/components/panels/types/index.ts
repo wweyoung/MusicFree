@@ -20,6 +20,7 @@ import MusicComment from "./musicComment";
 import MusicItemLyricOptions from "./musicItemLyricOptions";
 import EditMusicSheetInfo from "./editMusicSheetInfo";
 import UploadMusicItem from "@/components/panels/types/uploadMusicItem";
+import LyricSettingPanel from "@/components/panels/types/lyricSettingPanel";
 
 export default {
     /** 加入歌单 */
@@ -31,7 +32,7 @@ export default {
     /** 导入歌单 */
     ImportMusicSheet,
     /** 当前播放列表 */
-    PlayList: PlayList,
+    PlayList,
     /** 关联歌词 */
     AssociateLrc,
     /** 简单的输入 */
@@ -63,4 +64,5 @@ export default {
     MusicItemLyricOptions,
     EditMusicSheetInfo,
     UploadMusicItem,
+    LyricSettingPanel
 };

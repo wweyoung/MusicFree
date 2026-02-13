@@ -1,65 +1,80 @@
 import Config from "@/core/appConfig";
 
-import { DarkTheme as _DarkTheme, DefaultTheme as _DefaultTheme } from "@react-navigation/native";
-import { GlobalState } from "@/utils/stateMapper";
-import { CustomizedColors } from "@/hooks/useColors";
+import {DarkTheme as _DarkTheme, DefaultTheme as _DefaultTheme} from "@react-navigation/native";
+import {GlobalState} from "@/utils/stateMapper";
+import {CustomizedColors} from "@/hooks/useColors";
 import Color from "color";
+
+export const basicColors = {
+    rgb333: "#333333",
+    orange: "#f17d34",
+    blue: "#0A95C8",
+    green: "#08A34C",
+    pink: "#FC5F5F",
+    purple: "#722ED1",
+    rgbeee: "#eeeeee",
+    white: "#fefefe"
+}
+
+export const basicColorValues = Object.values(basicColors)
+
+const basicTheme = {
+    success: basicColors.green,
+    danger: basicColors.pink,
+    info: basicColors.blue,
+}
 
 export const lightTheme = {
     id: "p-light",
     ..._DefaultTheme,
+    ...basicTheme,
     colors: {
         ..._DefaultTheme.colors,
         background: "transparent",
-        text: "#333333",
-        textSecondary: Color("#333333").alpha(0.7).toString(),
-        primary: "#f17d34",
-        pageBackground: "#fafafa",
+        text: basicColors.rgb333,
+        textSecondary: Color("rgba(51,51,51,0.7)").alpha(0.7).toString(),
+        primary: basicColors.orange,
+        pageBackground: basicColors.white,
         shadow: "#000",
-        appBar: "#f17d34",
-        appBarText: "#fefefe",
-        musicBar: "#f2f2f2",
-        musicBarText: "#333333",
-        divider: "rgba(0,0,0,0.1)",
-        listActive: "rgba(0,0,0,0.1)", // 在手机上表现是ripple
+        appBar: basicColors.orange,
+        appBarText: basicColors.white,
+        musicBar: basicColors.rgbeee,
+        musicBarText: basicColors.rgb333,
+        divider: basicColors.rgbeee,
+        listActive: basicColors.rgbeee, // 在手机上表现是ripple
         mask: "rgba(51,51,51,0.2)",
-        backdrop: "#f0f0f0",
-        tabBar: "#f0f0f0",
-        placeholder: "#eaeaea",
-        success: "#08A34C",
-        danger: "#FC5F5F",
-        info: "#0A95C8",
-        card: "#e2e2e288",
-        notification: "#f0f0f0",
+        backdrop: basicColors.rgbeee,
+        tabBar: basicColors.rgbeee,
+        placeholder: basicColors.rgbeee,
+        card: basicColors.rgbeee,
+        notification: basicColors.rgbeee,
     },
 };
 
 export const darkTheme = {
     id: "p-dark",
     ..._DarkTheme,
+    ...basicTheme,
     colors: {
         ..._DarkTheme.colors,
         background: "transparent",
-        text: "#fcfcfc",
+        text: basicColors.white,
         textSecondary: Color("#fcfcfc").alpha(0.7).toString(),
-        primary: "#3FA3B5",
+        primary: basicColors.blue,
         pageBackground: "#202020",
         shadow: "#999",
-        appBar: "#262626",
-        appBarText: "#fcfcfc",
-        musicBar: "#262626",
-        musicBarText: "#fcfcfc",
+        appBar: basicColors.rgb333,
+        appBarText: basicColors.white,
+        musicBar: basicColors.rgb333,
+        musicBarText: basicColors.white,
         divider: "rgba(255,255,255,0.1)",
         listActive: "rgba(255,255,255,0.1)", // 在手机上表现是ripple
         mask: "rgba(33,33,33,0.8)",
-        backdrop: "#303030",
-        tabBar: "#303030",
+        backdrop: basicColors.rgb333,
+        tabBar: basicColors.rgb333,
         placeholder: "#424242",
-        success: "#08A34C",
-        danger: "#FC5F5F",
-        info: "#0A95C8",
-        card: "#33333388",
-        notification: "#303030",
+        card: basicColors.rgb333,
+        notification: basicColors.rgb333,
     },
 };
 
@@ -72,23 +87,29 @@ interface IBackgroundInfo {
 const themeStore = new GlobalState(darkTheme);
 const backgroundStore = new GlobalState<IBackgroundInfo | null>(null);
 
-function setup() {
-    const currentTheme = Config.getConfig("theme.selectedTheme") ?? "p-dark";
+export function getCurrentThemeDefault() {
+    const currentTheme = Config.getConfig("theme.selectedTheme") ?? "p-light";
 
     if (currentTheme === "p-dark") {
-        themeStore.setValue(darkTheme);
+        return darkTheme;
     } else if (currentTheme === "p-light") {
-        themeStore.setValue(lightTheme);
+        return lightTheme;
     } else {
-        themeStore.setValue({
+        return {
             id: currentTheme,
             dark: true,
             // @ts-ignore
             colors:
-                (Config.getConfig("theme.colors") as CustomizedColors) ??
+                (Config.getConfig("theme.defaultColors") as CustomizedColors) ??
                 darkTheme.colors,
-        });
+        };
     }
+}
+
+
+function setup() {
+    const currentTheme = Config.getConfig("theme.selectedTheme") ?? "p-light";
+    themeStore.setValue(getCurrentThemeDefault());
 
     const bgUrl = Config.getConfig("theme.background");
     const bgBlur = Config.getConfig("theme.backgroundBlur");
@@ -121,6 +142,7 @@ function setTheme(
                 ...(extra?.colors ?? {}),
             },
         });
+        Config.setConfig("theme.defaultColors", themeStore.getValue().colors);
     }
 
     Config.setConfig("theme.selectedTheme", themeName);
@@ -154,7 +176,7 @@ function setTheme(
 
 function setColors(colors: Partial<CustomizedColors>) {
     const currentTheme = themeStore.getValue();
-    if (currentTheme.id !== "p-light" && currentTheme.id !== "p-dark") {
+    // if (currentTheme.id !== "p-light" && currentTheme.id !== "p-dark") {
         const newTheme = {
             ...currentTheme,
             colors: {
@@ -165,7 +187,7 @@ function setColors(colors: Partial<CustomizedColors>) {
         Config.setConfig("theme.customColors", newTheme.colors);
         Config.setConfig("theme.colors", newTheme.colors);
         themeStore.setValue(newTheme);
-    }
+    // }
 }
 
 function setBackground(backgroundInfo: Partial<IBackgroundInfo>) {
@@ -193,11 +215,11 @@ function setBackground(backgroundInfo: Partial<IBackgroundInfo>) {
 
 const configableColorKey: Array<keyof CustomizedColors> = [
     "primary",
-    "text",
     "appBar",
+    "text",
     "appBarText",
-    "musicBar",
     "musicBarText",
+    "musicBar",
     "pageBackground",
     "backdrop",
     "card",

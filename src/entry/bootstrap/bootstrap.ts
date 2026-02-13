@@ -26,7 +26,7 @@ import RNTrackPlayer, {AppKilledPlaybackBehavior, Capability} from "react-native
 import i18n from "@/core/i18n";
 import bootstrapAtom from "./bootstrap.atom";
 import {getDefaultStore} from "jotai";
-import {iconMap} from "@/components/base/icon";
+import {RatingType} from "react-native-track-player/lib/src/constants";
 
 
 // 依赖管理
@@ -170,7 +170,7 @@ export async function initTrackPlayer(logger?: IPerfLogger) {
         Capability.Pause,
         Capability.SkipToNext,
         Capability.SkipToPrevious,
-        // Capability.Custom
+        Capability.SetRating
         // Capability.Like,
         // Capability.Dislike
     ];
@@ -188,13 +188,7 @@ export async function initTrackPlayer(logger?: IPerfLogger) {
         capabilities: capabilities,
         compactCapabilities: capabilities,
         notificationCapabilities: [...capabilities, Capability.SeekTo],
-        customActions: [
-            {
-                id: 'action_favorite',
-                title: '收藏',
-                icon: iconMap.heart, // 已准备的原生图标
-            }
-        ]
+        ratingType: RatingType.Heart
     });
     logger?.mark("播放器初始化完成");
     trace("播放器初始化完成");

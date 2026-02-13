@@ -1,19 +1,21 @@
-import React, { useMemo, useRef, useState, useCallback, useEffect } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {Image, StyleSheet, View} from "react-native";
 import rpx from "@/utils/rpx";
 import PanelBase from "../base/panelBase";
 import LinearGradient from "react-native-linear-gradient";
 import Color from "color";
-import { Gesture, GestureDetector, TextInput } from "react-native-gesture-handler";
-import { hidePanel } from "../usePanel";
-import { ImgAsset } from "@/constants/assetsConst";
+import {Gesture, GestureDetector, TextInput} from "react-native-gesture-handler";
+import {hidePanel} from "../usePanel";
+import {ImgAsset} from "@/constants/assetsConst";
 import PanelHeader from "../base/panelHeader";
-import { useI18N } from "@/core/i18n";
+import {useI18N} from "@/core/i18n";
+import ColorSelect from "@/components/base/colorSelect";
 
 interface IColorPickerProps {
     defaultColor?: string;
     onSelected?: (color: Color) => void;
     closePanelWhenSelected?: boolean;
+    selectOptions?: string[]
 }
 
 const areaSize = rpx(420);
@@ -23,9 +25,10 @@ export default function ColorPicker(props: IColorPickerProps) {
         onSelected,
         defaultColor = "#66ccff",
         closePanelWhenSelected = true,
+        selectOptions
     } = props;
 
-    const { t } = useI18N();
+    const {t} = useI18N();
 
     const [currentHue, setCurrentHue] = useState(Color(defaultColor).hue());
     const [currentSaturation, setCurrentSaturation] = useState(
@@ -106,7 +109,7 @@ export default function ColorPicker(props: IColorPickerProps) {
 
     const slTap = Gesture.Tap()
         .onStart(event => {
-            const { x, y } = event;
+            const {x, y} = event;
             handleSLUpdate(x, y);
         })
         .runOnJS(true);
@@ -117,7 +120,7 @@ export default function ColorPicker(props: IColorPickerProps) {
             const newTimeStamp = Date.now();
             if (newTimeStamp - lastTimestampRef.current > 32) {
                 lastTimestampRef.current = newTimeStamp;
-                const { x, y } = event;
+                const {x, y} = event;
                 handleSLUpdate(x, y);
             }
         })
@@ -127,14 +130,14 @@ export default function ColorPicker(props: IColorPickerProps) {
 
     const hueTap = Gesture.Tap()
         .onStart(event => {
-            const { y } = event;
+            const {y} = event;
             handleHueUpdate(y);
         })
         .runOnJS(true);
 
     const huePan = Gesture.Pan()
         .onUpdate(event => {
-            const { y } = event;
+            const {y} = event;
             handleHueUpdate(y);
         })
         .runOnJS(true);
@@ -143,14 +146,14 @@ export default function ColorPicker(props: IColorPickerProps) {
 
     const alphaTap = Gesture.Tap()
         .onStart(event => {
-            const { y } = event;
+            const {y} = event;
             handleAlphaUpdate(y);
         })
         .runOnJS(true);
 
     const alphaPan = Gesture.Pan()
         .onUpdate(event => {
-            const { y } = event;
+            const {y} = event;
             handleAlphaUpdate(y);
         })
         .runOnJS(true);
@@ -164,12 +167,7 @@ export default function ColorPicker(props: IColorPickerProps) {
     const handleColorInputSubmit = useCallback(() => {
         try {
             const color = Color(inputValue);
-            const hsl = color.hsl();
-
-            setCurrentHue(hsl.hue() || 0);
-            setCurrentSaturation(hsl.saturationl());
-            setCurrentLightness(hsl.lightness());
-            setCurrentAlpha(color.alpha());
+            setCurrentColor(color);
         } catch (error) {
             // 如果输入的颜色无效，恢复到当前颜色
             setInputValue(colorHexString);
@@ -179,6 +177,15 @@ export default function ColorPicker(props: IColorPickerProps) {
     const handleColorInputBlur = useCallback(() => {
         handleColorInputSubmit();
     }, [handleColorInputSubmit]);
+
+    const setCurrentColor = (color: Color) => {
+        const hsl = color.hsl();
+
+        setCurrentHue(hsl.hue() || 0);
+        setCurrentSaturation(hsl.saturationl());
+        setCurrentLightness(hsl.lightness());
+        setCurrentAlpha(color.alpha());
+    }
 
     return (
         <PanelBase
@@ -193,14 +200,8 @@ export default function ColorPicker(props: IColorPickerProps) {
                             if (inputValue !== colorHexString) {
                                 try {
                                     const color = Color(inputValue);
-                                    const hsl = color.hsl();
-                                    
-                                    // 更新颜色状态
-                                    setCurrentHue(hsl.hue() || 0);
-                                    setCurrentSaturation(hsl.saturationl());
-                                    setCurrentLightness(hsl.lightness());
-                                    setCurrentAlpha(color.alpha());
-                                    
+                                    setCurrentColor(color);
+
                                     // 使用输入的颜色进行提交
                                     onSelected?.(color);
                                 } catch (error) {
@@ -211,151 +212,153 @@ export default function ColorPicker(props: IColorPickerProps) {
                                 // 输入值与当前颜色相同，直接使用当前颜色
                                 onSelected?.(currentColorWithAlpha);
                             }
-                            
+
                             if (closePanelWhenSelected) {
                                 hidePanel();
                             }
                         }}
                         title={t("panel.colorPicker.title")}
                     />
-
-                    <View style={styles.container}>
-                        <GestureDetector gesture={slComposed}>
-                            <View
-                                style={[
-                                    styles.slContainer,
-                                    {
-                                        backgroundColor: hueColorString,
-                                    },
-                                ]}>
+                    <View style={styles.panelBody}>
+                        <View style={styles.container}>
+                            <GestureDetector gesture={slComposed}>
+                                <View
+                                    style={[
+                                        styles.slContainer,
+                                        {
+                                            backgroundColor: hueColorString,
+                                        },
+                                    ]}>
+                                    <LinearGradient
+                                        start={{x: 0, y: 0}}
+                                        end={{x: 1, y: 0}}
+                                        colors={["#808080", "rgba(0,0,0,0)"]}
+                                        style={[styles.slContainer, styles.layer1]}
+                                    />
+                                    <LinearGradient
+                                        start={{x: 0, y: 0}}
+                                        end={{x: 0, y: 1}}
+                                        colors={["#fff", "rgba(0,0,0,0)", "#000"]}
+                                        style={[styles.slContainer, styles.layer2]}
+                                    />
+                                    <View
+                                        style={[
+                                            styles.slThumb,
+                                            slThumbStyle,
+                                        ]}
+                                    />
+                                </View>
+                            </GestureDetector>
+                            <GestureDetector gesture={hueComposed}>
                                 <LinearGradient
-                                    start={{ x: 0, y: 0 }}
-                                    end={{ x: 1, y: 0 }}
-                                    colors={["#808080", "rgba(0,0,0,0)"]}
-                                    style={[styles.slContainer, styles.layer1]}
-                                />
+                                    start={{
+                                        x: 0,
+                                        y: 0,
+                                    }}
+                                    end={{
+                                        x: 0,
+                                        y: 1,
+                                    }}
+                                    colors={[
+                                        "#f00",
+                                        "#ff0",
+                                        "#0f0",
+                                        "#0ff",
+                                        "#00f",
+                                        "#f0f",
+                                        "#f00",
+                                    ]}
+                                    style={styles.hueContainer}>
+                                    <View
+                                        style={[
+                                            styles.hueThumb,
+                                            hueThumbStyle,
+                                        ]}
+                                    />
+                                </LinearGradient>
+                            </GestureDetector>
+                            <GestureDetector gesture={alphaComposed}>
                                 <LinearGradient
-                                    start={{ x: 0, y: 0 }}
-                                    end={{ x: 0, y: 1 }}
-                                    colors={["#fff", "rgba(0,0,0,0)", "#000"]}
-                                    style={[styles.slContainer, styles.layer2]}
-                                />
-                                <View
-                                    style={[
-                                        styles.slThumb,
-                                        slThumbStyle,
+                                    start={{
+                                        x: 0,
+                                        y: 0,
+                                    }}
+                                    end={{
+                                        x: 0,
+                                        y: 1,
+                                    }}
+                                    colors={[
+                                        currentColorString,
+                                        currentColorAlpha0String,
                                     ]}
-                                />
-                            </View>
-                        </GestureDetector>
-                        <GestureDetector gesture={hueComposed}>
-                            <LinearGradient
-                                start={{
-                                    x: 0,
-                                    y: 0,
-                                }}
-                                end={{
-                                    x: 0,
-                                    y: 1,
-                                }}
-                                colors={[
-                                    "#f00",
-                                    "#ff0",
-                                    "#0f0",
-                                    "#0ff",
-                                    "#00f",
-                                    "#f0f",
-                                    "#f00",
-                                ]}
-                                style={styles.hueContainer}>
-                                <View
                                     style={[
-                                        styles.hueThumb,
-                                        hueThumbStyle,
-                                    ]}
-                                />
-                            </LinearGradient>
-                        </GestureDetector>
-                        <GestureDetector gesture={alphaComposed}>
-                            <LinearGradient
-                                start={{
-                                    x: 0,
-                                    y: 0,
-                                }}
-                                end={{
-                                    x: 0,
-                                    y: 1,
-                                }}
-                                colors={[
-                                    currentColorString,
-                                    currentColorAlpha0String,
-                                ]}
-                                style={[
-                                    styles.hueContainer,
-                                    styles.alphaContainer,
-                                ]}>
-                                <View
-                                    style={[
-                                        styles.hueThumb,
-                                        alphaThumbStyle,
-                                    ]}
-                                />
+                                        styles.hueContainer,
+                                        styles.alphaContainer,
+                                    ]}>
+                                    <View
+                                        style={[
+                                            styles.hueThumb,
+                                            alphaThumbStyle,
+                                        ]}
+                                    />
+                                    <Image
+                                        resizeMode="repeat"
+                                        source={ImgAsset.transparentBg}
+                                        style={styles.transparentBg}
+                                    />
+                                </LinearGradient>
+                            </GestureDetector>
+                        </View>
+                        <View style={styles.colorSelect}>
+                            <ColorSelect color={colorHexString} options={selectOptions} limit={0} custom={false} onSelect={(color) => {
+                                setCurrentColor(Color(color));
+                            }}/>
+                        </View>
+                        <View style={styles.showArea}>
+                            <View style={[styles.showBar]}>
                                 <Image
                                     resizeMode="repeat"
                                     source={ImgAsset.transparentBg}
                                     style={styles.transparentBg}
                                 />
-                            </LinearGradient>
-                        </GestureDetector>
-                    </View>
-                    <View style={styles.showArea}>
-                        <View style={[styles.showBar]}>
-                            <Image
-                                resizeMode="repeat"
-                                source={ImgAsset.transparentBg}
-                                style={styles.transparentBg}
-                            />
-                            <View
-                                style={[
-                                    styles.showBarContent,
-                                    {
-                                        backgroundColor: currentColorWithAlphaString,
-                                    },
-                                ]}
+                                <View
+                                    style={[
+                                        styles.showBarContent,
+                                        {
+                                            backgroundColor: currentColorWithAlphaString,
+                                        },
+                                    ]}
+                                />
+                            </View>
+                            <TextInput
+                                style={styles.colorInput}
+                                value={inputValue}
+                                onChangeText={handleColorInputChange}
+                                onSubmitEditing={handleColorInputSubmit}
+                                onBlur={handleColorInputBlur}
+                                placeholder="#RRGGBBAA"
+                                placeholderTextColor="#999"
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                returnKeyType="done"
                             />
                         </View>
-                        <TextInput
-                            style={styles.colorInput}
-                            value={inputValue}
-                            onChangeText={handleColorInputChange}
-                            onSubmitEditing={handleColorInputSubmit}
-                            onBlur={handleColorInputBlur}
-                            placeholder="#RRGGBBAA"
-                            placeholderTextColor="#999"
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            returnKeyType="done"
-                        />
                     </View>
                 </>
+
             )}
         />
     );
 }
 
 const styles = StyleSheet.create({
-    opeartions: {
-        width: "100%",
-        paddingHorizontal: rpx(36),
-        flexDirection: "row",
-        height: rpx(100),
-        alignItems: "center",
-        justifyContent: "space-between",
+    panelBody: {
+        flex: 1,
+        gap: rpx(20),
+        padding: rpx(36),
     },
     container: {
         width: "100%",
-        paddingHorizontal: rpx(48),
-        paddingTop: rpx(36),
         flexDirection: "row",
     },
     slContainer: {
@@ -418,8 +421,6 @@ const styles = StyleSheet.create({
     },
     showArea: {
         width: "100%",
-        marginTop: rpx(36),
-        paddingHorizontal: rpx(48),
         flexDirection: "row",
         alignItems: "center",
     },
@@ -434,6 +435,7 @@ const styles = StyleSheet.create({
         left: 0,
         top: 0,
     },
+    colorSelect: {},
     colorInput: {
         marginLeft: rpx(24),
         minWidth: rpx(150),

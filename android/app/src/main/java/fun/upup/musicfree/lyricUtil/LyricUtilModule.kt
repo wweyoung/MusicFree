@@ -97,10 +97,10 @@ class LyricUtilModule(private val reactContext: ReactApplicationContext): ReactC
     }
 
     @ReactMethod
-    fun setStatusBarLyricText(lyric: String, promise: Promise) {
+    fun setStatusBarLyricText(lyric: String, duration: Double, promise: Promise) {
         try {
             UiThreadUtil.runOnUiThread {
-                lyricView?.setText(lyric)
+                lyricView?.setText(lyric, duration)
             }
             promise.resolve(true)
         } catch (e: Exception) {

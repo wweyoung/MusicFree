@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, {ReactNode, useEffect, useMemo, useState} from "react";
 import {
     LayoutRectangle,
     StatusBar as OriginalStatusBar,
@@ -15,16 +15,12 @@ import color from "color";
 import IconButton from "./iconButton";
 import globalStyle from "@/constants/globalStyle";
 import ThemeText from "./themeText";
-import { useNavigation } from "@react-navigation/native";
-import Animated, {
-    Easing,
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
-} from "react-native-reanimated";
+import {useNavigation} from "@react-navigation/native";
+import Animated, {Easing, useAnimatedStyle, useSharedValue, withTiming,} from "react-native-reanimated";
 import Portal from "./portal";
 import ListItem from "./listItem";
-import { IIconName } from "@/components/base/icon.tsx";
+import {IIconName} from "@/components/base/icon.tsx";
+import ScrollLineView from "@/components/base/scrollLineView";
 
 interface IAppBarProps {
     titleTextOpacity?: number;
@@ -96,6 +92,25 @@ export default function AppBar(props: IAppBarProps) {
         };
     });
 
+    const navBarTitle = useMemo(()=>(
+        <ScrollLineView>
+            <ThemeText
+                fontSize="title"
+                fontWeight="bold"
+                numberOfLines={1}
+                color={
+                    titleTextOpacity !== 1
+                        ? color(contentColor)
+                            .alpha(titleTextOpacity)
+                            .toString()
+                        : contentColor
+                }>
+                {children}
+            </ThemeText>
+        </ScrollLineView>
+    ), [children, titleTextOpacity, contentColor])
+
+
     return (
         <>
             {withStatusBar ? <StatusBar backgroundColor={bgColor} /> : null}
@@ -119,19 +134,7 @@ export default function AppBar(props: IAppBarProps) {
                 />
                 <View style={[globalStyle.grow, styles.content, contentStyle]}>
                     {typeof children === "string" ? (
-                        <ThemeText
-                            fontSize="title"
-                            fontWeight="bold"
-                            numberOfLines={1}
-                            color={
-                                titleTextOpacity !== 1
-                                    ? color(contentColor)
-                                        .alpha(titleTextOpacity)
-                                        .toString()
-                                    : contentColor
-                            }>
-                            {children}
-                        </ThemeText>
+                        navBarTitle
                     ) : (
                         children
                     )}

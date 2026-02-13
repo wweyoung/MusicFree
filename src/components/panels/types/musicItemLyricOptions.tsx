@@ -1,28 +1,29 @@
 import FastImage from "@/components/base/fastImage";
 import ListItem from "@/components/base/listItem";
 import ThemeText from "@/components/base/themeText";
-import { ImgAsset } from "@/constants/assetsConst";
-import { getMediaUniqueKey } from "@/utils/mediaUtils";
+import {ImgAsset} from "@/constants/assetsConst";
+import {getMediaUniqueKey} from "@/utils/mediaUtils";
 import rpx from "@/utils/rpx";
 import Toast from "@/utils/toast";
 import Clipboard from "@react-native-clipboard/clipboard";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import {StyleSheet, View} from "react-native";
 
 import Divider from "@/components/base/divider";
-import { IIconName } from "@/components/base/icon.tsx";
-import { hidePanel } from "@/components/panels/usePanel.ts";
-import { iconSizeConst } from "@/constants/uiConst";
+import {IIconName} from "@/components/base/icon.tsx";
+import {hidePanel, showPanel} from "@/components/panels/usePanel.ts";
+import {iconSizeConst} from "@/constants/uiConst";
 import Config from "@/core/appConfig";
 import lyricManager from "@/core/lyricManager";
 import mediaCache from "@/core/mediaCache";
 import LyricUtil from "@/native/lyricUtil";
-import { getDocumentAsync } from "expo-document-picker";
-import { readAsStringAsync } from "expo-file-system";
-import { FlatList } from "react-native-gesture-handler";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {getDocumentAsync} from "expo-document-picker";
+import {readAsStringAsync} from "expo-file-system";
+import {FlatList} from "react-native-gesture-handler";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 import PanelBase from "../base/panelBase";
-import { useI18N } from "@/core/i18n";
+import {useI18N} from "@/core/i18n";
+import TrackPlayer from "@/core/trackPlayer";
 
 interface IMusicItemLyricOptionsProps {
     /** 歌曲信息 */
@@ -127,6 +128,28 @@ export default function MusicItemLyricOptions(
                     Config.setConfig("lyric.showStatusBarLyric", false);
                 }
                 hidePanel();
+            },
+        },
+        {
+            icon: "magnifying-glass",
+            title: t("lyric.searchLyric"),
+            async onPress() {
+                const currentMusic = TrackPlayer.currentMusic;
+                if (!currentMusic) {
+                    return;
+                }
+                // if (
+                //     Config.get('setting.basic.associateLyricType') ===
+                //     'input'
+                // ) {
+                //     showPanel('AssociateLrc', {
+                //         musicItem: currentMusic,
+                //     });
+                // } else {
+                showPanel("SearchLrc", {
+                    musicItem: currentMusic,
+                });
+                // }
             },
         },
         {

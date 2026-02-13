@@ -1,8 +1,8 @@
-import React, { memo } from "react";
-import { StyleSheet, Text } from "react-native";
+import React, {memo} from "react";
+import {StyleSheet, Text} from "react-native";
 import rpx from "@/utils/rpx";
 import useColors from "@/hooks/useColors";
-import { fontSizeConst } from "@/constants/uiConst";
+import {fontSizeConst} from "@/constants/uiConst";
 
 interface ILyricItemComponentProps {
     // 行号
@@ -16,11 +16,13 @@ interface ILyricItemComponentProps {
     // 字体大小
     fontSize?: number;
 
+    textAlign?: 'center' | 'left'
+
     onLayout?: (index: number, height: number) => void;
 }
 
 function _LyricItemComponent(props: ILyricItemComponentProps) {
-    const { light, highlight, text, onLayout, index, fontSize } = props;
+    const { light, highlight, text, onLayout, index, fontSize, textAlign } = props;
 
     const colors = useColors();
 
@@ -35,7 +37,8 @@ function _LyricItemComponent(props: ILyricItemComponentProps) {
                 lyricStyles.item,
                 {
                     fontSize: fontSize || fontSizeConst.content,
-                },
+                    textAlign:  textAlign || 'center'
+            },
                 highlight
                     ? [
                         lyricStyles.highlightItem,
@@ -58,7 +61,8 @@ const LyricItemComponent = memo(
         prev.highlight === curr.highlight &&
         prev.text === curr.text &&
         prev.index === curr.index &&
-        prev.fontSize === curr.fontSize,
+        prev.fontSize === curr.fontSize &&
+        prev.textAlign === curr.textAlign,
 );
 
 export default LyricItemComponent;
@@ -73,7 +77,6 @@ const lyricStyles = StyleSheet.create({
         paddingHorizontal: rpx(64),
         paddingVertical: rpx(24),
         width: "100%",
-        textAlign: "center",
         textAlignVertical: "center",
     },
     draggingItem: {

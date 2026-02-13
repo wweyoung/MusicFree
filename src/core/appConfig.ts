@@ -1,10 +1,10 @@
-import { useMMKVObject } from "react-native-mmkv";
+import {useMMKVObject} from "react-native-mmkv";
 
-import { getStorage, removeStorage } from "@/utils/storage";
+import {getStorage, removeStorage} from "@/utils/storage";
 import getOrCreateMMKV from "@/utils/getOrCreateMMKV.ts";
 
-import type { AppConfigPropertyKey, IAppConfig, IAppConfigProperties } from "@/types/core/config";
-import { safeStringify } from "@/utils/jsonUtil";
+import type {AppConfigPropertyKey, IAppConfig, IAppConfigProperties} from "@/types/core/config";
+import {safeStringify} from "@/utils/jsonUtil";
 
 const configStore = getOrCreateMMKV("App.config");
 
@@ -199,5 +199,5 @@ export default appConfig;
 
 /***** hooks *****/
 export function useAppConfig<K extends keyof IAppConfigProperties>(key: K): IAppConfigProperties[K] | undefined {
-    return useMMKVObject<IAppConfigProperties[K]>(key, configStore)[0];
+    return useMMKVObject<IAppConfigProperties[K]>(key, configStore)?.[0];
 }

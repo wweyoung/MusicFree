@@ -1,5 +1,5 @@
-import type { ResumeMode, SortType } from "@/constants/commonConst.ts";
-import type { CustomizedColors } from "@/hooks/useColors";
+import type {ResumeMode, SortType} from "@/constants/commonConst.ts";
+import type {CustomizedColors} from "@/hooks/useColors";
 
 export interface IAppConfigProperties {
     $schema: "2";
@@ -42,6 +42,7 @@ export interface IAppConfigProperties {
     "lyric.widthPercent": number;
     "lyric.fontSize": number;
     "lyric.detailFontSize": number;
+    "lyric.detailTextAlign": string;
     "lyric.autoSearchLyric": boolean;
 
     // Theme
@@ -50,6 +51,7 @@ export interface IAppConfigProperties {
     "theme.backgroundBlur": number;
     "theme.colors": CustomizedColors;
     "theme.customColors"?: CustomizedColors;
+    "theme.defaultColors"?: CustomizedColors; // 当前主题默认色
     "theme.followSystem": boolean;
     "theme.selectedTheme": string;
 

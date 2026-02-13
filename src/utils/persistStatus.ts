@@ -3,8 +3,8 @@
  */
 
 import getOrCreateMMKV from "@/utils/getOrCreateMMKV";
-import { useEffect, useState } from "react";
-import { safeParse } from "./jsonUtil";
+import {useEffect, useState} from "react";
+import {safeParse} from "./jsonUtil";
 
 // Internal Method
 const getStore = () => {
@@ -38,6 +38,8 @@ interface IPersistStatus {
     "lyric.showTranslation": boolean;
     /** 歌词-详情页字体大小 */
     "lyric.detailFontSize": number;
+
+    "lyric.detailTextAlign": string;
 }
 
 function set<K extends keyof IPersistStatus>(

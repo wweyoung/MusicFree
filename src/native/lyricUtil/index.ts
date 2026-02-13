@@ -1,7 +1,7 @@
 import Config from "@/core/appConfig";
 import Toast from "@/utils/toast";
-import { NativeModule, NativeModules } from "react-native";
-import { errorLog } from "@/utils/log.ts";
+import {NativeModule, NativeModules} from "react-native";
+import {errorLog} from "@/utils/log.ts";
 
 export enum NativeTextAlignment {
     // 左对齐
@@ -22,7 +22,7 @@ interface ILyricUtil extends NativeModule {
     /** 隐藏状态栏歌词 */
     hideStatusBarLyric: () => Promise<void>;
     /** 设置歌词文本 */
-    setStatusBarLyricText: (lyric: string) => Promise<void>;
+    setStatusBarLyricText: (lyric: string, duration: number | null) => Promise<void>;
     /** 设置距离顶部的距离 */
     setStatusBarLyricTop: (percent: number) => Promise<void>;
     /** 设置距离左部的距离 */

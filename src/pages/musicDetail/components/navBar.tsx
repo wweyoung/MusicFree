@@ -19,7 +19,7 @@ export default function NavBar() {
 
     const titleMemo = useMemo(()=>{
         return (
-            <ScrollLineView sleepTime={3000}>
+            <ScrollLineView>
                 <Text numberOfLines={1} style={styles.headerTitleText}
                       onPress={()=>navigate(ROUTE_PATH.SEARCH_PAGE, { type: "music", query: musicItem?.title })}>
                     {musicItem?.title ?? "--"}

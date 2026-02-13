@@ -44,6 +44,7 @@ import LanguageIcon from "@/assets/icons/language.svg";
 import LinkSlashIcon from "@/assets/icons/link-slash.svg";
 import LinkIcon from "@/assets/icons/link.svg";
 import LyricIcon from "@/assets/icons/lyric.svg";
+import LyricSettingIcon from "@/assets/icons/lyric-setting.svg";
 import MagnifyingGlassIcon from "@/assets/icons/magnifying-glass.svg";
 import MinusIcon from "@/assets/icons/minus.svg";
 import MotionPlayIcon from "@/assets/icons/motion-play.svg";
@@ -56,6 +57,7 @@ import PlayCircleOutlineIcon from "@/assets/icons/play-circle-outline.svg";
 import PlayCircleIcon from "@/assets/icons/play-circle.svg";
 import PlayIcon from "@/assets/icons/play.svg";
 import PlaylistIcon from "@/assets/icons/playlist.svg";
+import PlayRateIcon from "@/assets/icons/play-rate.svg";
 import PlusIcon from "@/assets/icons/plus.svg";
 import PowerOutlineIcon from "@/assets/icons/power-outline.svg";
 import QuestionMarkCircleIcon from "@/assets/icons/question-mark-circle.svg";
@@ -74,7 +76,6 @@ import TrashOutlineIcon from "@/assets/icons/trash-outline.svg";
 import TrophyIcon from "@/assets/icons/trophy.svg";
 import UserIcon from "@/assets/icons/user.svg";
 import XMarkIcon from "@/assets/icons/x-mark.svg";
-import PlayRateIcon from "@/assets/icons/play-rate.svg";
 
 export type IIconName =
     | "alarm-outline"
@@ -120,6 +121,7 @@ export type IIconName =
     | "link-slash"
     | "link"
     | "lyric"
+    | "lyric-setting"
     | "magnifying-glass"
     | "minus"
     | "motion-play"
@@ -132,6 +134,7 @@ export type IIconName =
     | "play-circle"
     | "play"
     | "playlist"
+    | "play-rate"
     | "plus"
     | "power-outline"
     | "question-mark-circle"
@@ -149,7 +152,6 @@ export type IIconName =
     | "trash-outline"
     | "trophy"
     | "user"
-    | "play-rate"
     | "x-mark";
 
 interface IProps extends SvgProps {
@@ -203,6 +205,7 @@ export const iconMap = {
     link: LinkIcon,
     language: LanguageIcon,
     lyric: LyricIcon,
+    "lyric-setting": LyricSettingIcon,
     "magnifying-glass": MagnifyingGlassIcon,
     minus: MinusIcon,
     "motion-play": MotionPlayIcon,

@@ -52,7 +52,8 @@ export default class LyricParser {
             translation = undefined;
         }
 
-        const { lrcItems, meta } = this.parseLyricImpl(raw);
+        const { lrcItems, meta, hasTranslation = false } = this.parseLyricImpl(raw, Boolean(translation));
+        this.hasTranslation = hasTranslation;
         if (this.extra.offset) {
             meta.offset = (meta.offset ?? 0) + this.extra.offset;
         }
@@ -61,12 +62,12 @@ export default class LyricParser {
 
         if (translation) {
             this.hasTranslation = true;
-            const transLrcItems = this.parseLyricImpl(translation).lrcItems;
+            const transLrcItems = this.parseLyricImpl(translation, this.hasTranslation).lrcItems;
 
             // 2 pointer
             let p1 = 0;
             let p2 = 0;
-
+            let transCount = 0;
             while (p1 < this.lrcItems.length) {
                 const lrcItem = this.lrcItems[p1];
                 while (
@@ -75,13 +76,17 @@ export default class LyricParser {
                 ) {
                     ++p2;
                 }
-                if (transLrcItems[p2].time === lrcItem.time) {
+                if (transLrcItems[p2].time === lrcItem.time && lrcItem.lrc !== transLrcItems[p2].lrc) {
                     lrcItem.translation = transLrcItems[p2].lrc;
-                } else {
-                    lrcItem.translation = "";
+                    transCount++;
+                } else if (!lrcItem.translation) {
+                    lrcItem.translation = undefined;
                 }
 
                 ++p1;
+            }
+            if (!transCount) {
+                this.hasTranslation = false;
             }
         }
     }
@@ -192,9 +197,9 @@ export default class LyricParser {
         return meta;
     }
 
-    private parseLyricImpl(raw: string) {
+    private parseLyricImpl(raw: string, hasTranslation?: boolean) {
         raw = raw.trim();
-        const rawLrcItems: Array<IParsedLrcItem> = [];
+        const rawLrcItems: {number: IParsedLrcItem[]} = {};
         const rawLrcs = raw.split(timeReg) ?? [];
         const rawTimes = raw.match(timeReg) ?? [];
         const len = rawTimes.length;
@@ -212,16 +217,21 @@ export default class LyricParser {
             }
             lrc = rawLrcs[0]?.trim?.() ?? "";
             for (j = i; j < i + counter; ++j) {
-                rawLrcItems.push({
-                    time: this.parseTime(rawTimes[j]),
+                let time = this.parseTime(rawTimes[j])
+                if (!rawLrcItems[time]) rawLrcItems[time] = [];
+                rawLrcItems[time].push({
+                    time,
                     lrc,
                     index: j,
+                    duration: 0
                 });
             }
             i += counter;
             if (i < len) {
-                rawLrcItems.push({
-                    time: this.parseTime(rawTimes[i]),
+                let time = this.parseTime(rawTimes[i])
+                if (!rawLrcItems[time]) rawLrcItems[time] = [];
+                rawLrcItems[time].push({
+                    time,
                     lrc,
                     index: j,
                     duration: 0
@@ -229,7 +239,21 @@ export default class LyricParser {
             }
             rawLrcs.shift();
         }
-        let lrcItems = rawLrcItems.sort((a, b) => a.time - b.time);
+        let rawLrcItemsEntries = Object.entries(rawLrcItems);
+        if (!hasTranslation) {
+            let doubleRawLrcItemEntries = rawLrcItemsEntries.filter(([time, lrcItems]) => lrcItems.length === 2);
+            if (doubleRawLrcItemEntries.length > rawLrcItemsEntries.length / 2) {
+                // 有超过一半歌词都有两份，认为是包含翻译的
+                hasTranslation = true;
+
+                doubleRawLrcItemEntries.forEach(([time, lrcItems]) => {
+                    // lrcItems[0].translation = lrcItems[1].lrc;
+                })
+            }
+        }
+        let lrcItems = rawLrcItemsEntries.map(([time, lrcItems])=>lrcItems[0])
+            .sort((a, b) => a.time - b.time);
+
         lrcItems.forEach((item, index) => {
             item.index = index;
         });
@@ -241,12 +265,14 @@ export default class LyricParser {
                 duration: 0
             }));
         }
+        // 计算时长
         for (let i = 0; i < lrcItems.length - 1; i++) {
             lrcItems[i].duration = lrcItems[i + 1].time - lrcItems[i].time;
         }
         return {
             lrcItems,
             meta,
+            hasTranslation
         };
     }
 }

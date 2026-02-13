@@ -1,6 +1,6 @@
 {
   "name": "MusicFree",
-  "version": "0.6.2",
+  "version": "0.6.2.1",
   "private": true,
   "license": "AGPL",
   "author": {
@@ -14,10 +14,12 @@
     "start": "react-native start",
     "clean": "cd .\\android && .\\gradlew clean",
     "test": "jest",
-     "commit-lint": "commitlint --edit",
+    "commit-lint": "commitlint --edit",
     "lint-staged": "lint-staged",
     "connect-mumu": "adb kill-server & adb connect localhost:7555",
     "build-android": "cd .\\android\\ && .\\gradlew assembleRelease",
+    "install-android": "cd .\\android\\app\\build\\outputs\\apk\\release && adb install -r app-arm64-v8a-release.apk",
+    "build-install-android": "npm run build-android && npm run install-android",
     "generate-assets": "node ./generator/generate-assets.mjs",
     "prepare": "husky"
   },
@@ -64,7 +66,7 @@
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.25.0",
     "react-native-get-random-values": "^1.11.0",
-    "react-native-image-colors": "^2.4.0",
+    "react-native-image-colors": "^2.5.1",
     "react-native-image-picker": "^7.1.2",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-logs": "^5.1.0",

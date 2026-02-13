@@ -2,14 +2,14 @@
 
 [中文](./readme.md) | **English**
 
-![GitHub Repo stars](https://img.shields.io/github/stars/maotoumao/MusicFree) 
-![GitHub forks](https://img.shields.io/github/forks/maotoumao/MusicFree)
+![GitHub Repo stars](https://img.shields.io/github/stars/wweyoung/MusicFree)
+![GitHub forks](https://img.shields.io/github/forks/wweyoung/MusicFree)
 ![star](https://gitcode.com/maotoumao/MusicFree/star/badge.svg)
 
-![GitHub License](https://img.shields.io/github/license/maotoumao/MusicFree)
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/maotoumao/MusicFree/total)
-![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/maotoumao/MusicFree)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/maotoumao/MusicFree)
+![GitHub License](https://img.shields.io/github/license/wweyoung/MusicFree)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/wweyoung/MusicFree/total)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/wweyoung/MusicFree)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/wweyoung/MusicFree)
 
 <a href="https://trendshift.io/repositories/1028" target="_blank"><img src="https://trendshift.io/api/badge/repositories/1028" alt="maotoumao%2FMusicFree | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 

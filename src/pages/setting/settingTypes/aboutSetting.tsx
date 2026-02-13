@@ -1,13 +1,7 @@
 import React from "react";
-import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import {Image, ScrollView, StyleSheet, TouchableOpacity, View,} from "react-native";
 import rpx from "@/utils/rpx";
-import { ImgAsset } from "@/constants/assetsConst";
+import {ImgAsset} from "@/constants/assetsConst";
 import ThemeText from "@/components/base/themeText";
 import LinkText from "@/components/base/linkText";
 import useCheckUpdate from "@/hooks/useCheckUpdate.ts";
@@ -38,12 +32,13 @@ export default function AboutSetting() {
                         checkAndShowResult(true);
                     }}>
                     <Image
-                        source={ImgAsset.author}
+                        source={ImgAsset.logo}
                         style={style.image}
                         resizeMode="contain"
                     />
                 </TouchableOpacity>
                 <ThemeText style={style.margin}>软件作者: 猫头猫</ThemeText>
+                <ThemeText style={style.margin}>二次开发: WeYoung</ThemeText>
                 <ThemeText style={style.margin}>
                     公众号: 【一只猫头猫】
                 </ThemeText>
@@ -65,7 +60,7 @@ export default function AboutSetting() {
             <ScrollView
                 contentContainerStyle={style.scrollViewContainer}
                 style={style.scrollView}>
-                <ThemeText fontSize="title">开发者的话: </ThemeText>
+                <ThemeText fontSize="title">猫头猫的话: </ThemeText>
                 <ThemeText style={style.content}>
                     软件作者是<ThemeText fontWeight="bold">猫头猫</ThemeText>
                     🐱，不是猫头鹰🦉，也不是什么其他的奇奇怪怪。软件没有其他版本，如果你下载到了付费版/广告版/挂羊头卖狗肉版，那说明你被坏蛋骗了😒。

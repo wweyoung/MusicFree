@@ -1,32 +1,24 @@
-import {
-    emptyFunction,
-    localPluginHash,
-    localPluginPlatform,
-} from "@/constants/commonConst";
+import {emptyFunction, localPluginHash, localPluginPlatform,} from "@/constants/commonConst";
 import pathConst from "@/constants/pathConst";
-import {
-    IInstallPluginConfig,
-    IInstallPluginResult,
-    IPluginManager,
-} from "@/types/core/pluginManager";
-import { removeAllMediaExtra } from "@/utils/mediaExtra";
+import {IInstallPluginConfig, IInstallPluginResult, IPluginManager,} from "@/types/core/pluginManager";
+import {removeAllMediaExtra} from "@/utils/mediaExtra";
 import axios from "axios";
-import { compare } from "compare-versions";
+import {compare} from "compare-versions";
 import EventEmitter from "eventemitter3";
-import { readAsStringAsync } from "expo-file-system";
-import { atom, getDefaultStore, useAtomValue } from "jotai";
-import { nanoid } from "nanoid";
-import { useEffect, useState } from "react";
-import { ToastAndroid } from "react-native";
-import { copyFile, readDir, readFile, unlink, writeFile } from "react-native-fs";
-import { devLog, errorLog, trace } from "../../utils/log";
+import {readAsStringAsync} from "expo-file-system";
+import {atom, getDefaultStore, useAtomValue} from "jotai";
+import {nanoid} from "nanoid";
+import {useEffect, useState} from "react";
+import {ToastAndroid} from "react-native";
+import {copyFile, readDir, readFile, unlink, writeFile} from "react-native-fs";
+import {devLog, errorLog, trace} from "../../utils/log";
 import pluginMeta from "./meta";
-import { localFilePlugin, Plugin, PluginState } from "./plugin";
+import {localFilePlugin, Plugin, PluginState} from "./plugin";
 import i18n from "../i18n";
 import getOrCreateMMKV from "@/utils/getOrCreateMMKV";
-import { safeParse } from "@/utils/jsonUtil";
-import { IInjectable } from "@/types/infra";
-import { IAppConfig } from "@/types/core/config";
+import {safeParse} from "@/utils/jsonUtil";
+import {IInjectable} from "@/types/infra";
+import {IAppConfig} from "@/types/core/config";
 import delay from "@/utils/delay";
 
 const pluginsAtom = atom<Plugin[]>([]);
@@ -97,55 +89,48 @@ class PluginManager implements IPluginManager, IInjectable {
             await pluginMeta.migratePluginMeta();
             // 加载插件
             const pluginsFileItems = await readDir(pathConst.pluginPath);
-            const allPlugins: Array<Plugin> = [];
-
-
-            for (let i = 0; i < pluginsFileItems.length; ++i) {
-                const pluginFileItem = pluginsFileItems[i];
-                trace("初始化插件", pluginFileItem);
-                if (
-                    pluginFileItem.isFile() &&
-                    (pluginFileItem.name?.endsWith?.(".js") ||
-                        pluginFileItem.path?.endsWith?.(".js"))
-                ) {
-                    // 如果存在缓存信息
-                    let plugin: Plugin;
-                    let isLazyLoad = false;
+            let allPlugins: Array<Plugin> = (
+                await Promise.all(pluginsFileItems.map(async (pluginFileItem) => {
+                    trace("初始化插件", pluginFileItem);
                     if (
-                        this.appConfigService.getConfig(
-                            "basic.lazyLoadPlugin",
-                        ) &&
-                        pluginCacheStore.contains(pluginFileItem.path)
+                        pluginFileItem.isFile() &&
+                        (pluginFileItem.name?.endsWith?.(".js") ||
+                            pluginFileItem.path?.endsWith?.(".js"))
                     ) {
-                        isLazyLoad = true;
-                        const lazyProps = safeParse(pluginCacheStore.getString(pluginFileItem.path));
-                        lazyProps.loadFuncCode = async () =>
-                            await readFile(pluginFileItem.path, "utf8");
-                        plugin = new Plugin(
-                            null,
-                            pluginFileItem.path,
-                            lazyProps,
-                        );
-                    } else {
-                        const funcCode = await readFile(
-                            pluginFileItem.path,
-                            "utf8",
-                        );
-                        plugin = new Plugin(funcCode, pluginFileItem.path);
+                        // 如果存在缓存信息
+                        let plugin: Plugin;
+                        let isLazyLoad = false;
+                        if (
+                            this.appConfigService.getConfig(
+                                "basic.lazyLoadPlugin",
+                            ) &&
+                            pluginCacheStore.contains(pluginFileItem.path)
+                        ) {
+                            isLazyLoad = true;
+                            const lazyProps = safeParse(pluginCacheStore.getString(pluginFileItem.path));
+                            lazyProps.loadFuncCode = async () =>
+                                await readFile(pluginFileItem.path, "utf8");
+                            plugin = new Plugin(
+                                null,
+                                pluginFileItem.path,
+                                lazyProps,
+                            );
+                        } else {
+                            const funcCode = await readFile(
+                                pluginFileItem.path,
+                                "utf8",
+                            );
+                            plugin = new Plugin(funcCode, pluginFileItem.path);
+                        }
+                        if (plugin.state === PluginState.Mounted || isLazyLoad) {
+                            return plugin;
+                        }
                     }
-
-                    const _pluginIndex = allPlugins.findIndex(
-                        p => p.hash === plugin.hash,
-                    );
-                    if (_pluginIndex !== -1) {
-                        // 重复插件，直接忽略
-                        continue;
-                    }
-                    if (plugin.state === PluginState.Mounted || isLazyLoad) {
-                        allPlugins.push(plugin);
-                    }
-                }
-            }
+                }))
+            );
+            allPlugins = allPlugins.filter((plugin, index) => {
+                return plugin && allPlugins.findIndex((aPlugin) => aPlugin?.hash === plugin.hash) === index;
+            });
 
             this.setPlugins(allPlugins);
             // 异步初始化插件
@@ -237,7 +222,8 @@ class PluginManager implements IPluginManager, IInjectable {
                     );
                     try {
                         await unlink(oldVersionPlugin.path);
-                    } catch {}
+                    } catch {
+                    }
                 }
                 const _pluginPath = `${pathConst.pluginPath}${fn}.js`;
                 await copyFile(pluginPath, _pluginPath);
@@ -332,7 +318,8 @@ class PluginManager implements IPluginManager, IInjectable {
                         );
                         try {
                             await unlink(oldVersionPlugin.path);
-                        } catch {}
+                        } catch {
+                        }
                     }
                     this.setPlugins(allPlugins);
                     return {
@@ -391,7 +378,8 @@ class PluginManager implements IPluginManager, IInjectable {
                 if (plugins.every(_ => _.name !== pluginName)) {
                     removeAllMediaExtra(pluginName);
                 }
-            } catch {}
+            } catch {
+            }
         }
     }
 
@@ -406,7 +394,8 @@ class PluginManager implements IPluginManager, IInjectable {
                     const pluginName = plugin.name;
                     await unlink(plugin.path);
                     removeAllMediaExtra(pluginName);
-                } catch (e) {}
+                } catch (e) {
+                }
             }),
         );
         this.setPlugins([]);
@@ -668,4 +657,4 @@ export function usePluginEnabled(plugin: Plugin) {
 }
 
 export default pluginManager;
-export { Plugin };
+export {Plugin};

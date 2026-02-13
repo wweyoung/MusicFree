@@ -1,12 +1,12 @@
 import AppBar from "@/components/base/appBar";
-import { showDialog } from "@/components/dialogs/useDialog";
-import { showPanel } from "@/components/panels/usePanel.ts";
-import { SortType } from "@/constants/commonConst.ts";
-import { useI18N } from "@/core/i18n";
-import MusicSheet, { useSheetItem } from "@/core/musicSheet";
-import { ROUTE_PATH, useParams } from "@/core/router";
-import { default as Toast, default as toast } from "@/utils/toast";
-import { useNavigation } from "@react-navigation/native";
+import {showDialog} from "@/components/dialogs/useDialog";
+import {showPanel} from "@/components/panels/usePanel.ts";
+import {SortType} from "@/constants/commonConst.ts";
+import {useI18N} from "@/core/i18n";
+import MusicSheet, {useSheetItem} from "@/core/musicSheet";
+import {ROUTE_PATH, useParams} from "@/core/router";
+import {default as Toast, default as toast} from "@/utils/toast";
+import {useNavigation} from "@react-navigation/native";
 import React from "react";
 
 export default function () {
@@ -109,7 +109,7 @@ export default function () {
                         },
                     },
                 ]}>
-                {t("common.sheet")}
+                {musicSheet.title}
             </AppBar>
         </>
     );

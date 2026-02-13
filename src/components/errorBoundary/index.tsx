@@ -1,11 +1,12 @@
-import React, { Component, ReactNode, useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Image, Platform } from "react-native";
+import React, {Component, ReactNode, useEffect, useState} from "react";
+import {Image, Platform, ScrollView, StyleSheet, Text, View} from "react-native";
 import DeviceInfo from "react-native-device-info";
 import useColors from "@/hooks/useColors";
 import rpx from "@/utils/rpx";
 import LinkText from "@/components/base/linkText";
-import { ImgAsset } from "@/constants/assetsConst";
+import {ImgAsset} from "@/constants/assetsConst";
 import ThemeText from "@/components/base/themeText";
+import Icon from "@/components/base/icon";
 
 interface DeviceInfoProps {
     colors: any;
@@ -56,9 +57,9 @@ function DeviceInfoSection({ colors }: DeviceInfoProps) {
 
     return (
         <View style={[styles.deviceInfoBox, { backgroundColor: colors.card, borderColor: colors.divider }]}>
-            <ThemeText 
-                fontSize="subTitle" 
-                fontWeight="bold" 
+            <ThemeText
+                fontSize="subTitle"
+                fontWeight="bold"
                 style={[styles.deviceInfoTitle, { color: colors.text }]}
             >
                 📱 设备信息
@@ -113,7 +114,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             error,
             errorInfo,
         });
-        
+
         // 这里可以添加错误日志上报
         console.error("ErrorBoundary caught an error:", error, errorInfo);
     }
@@ -137,16 +138,16 @@ function ErrorFallback({ error, errorInfo }: ErrorFallbackProps) {
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
-            <ScrollView 
+            <ScrollView
                 style={styles.scrollView}
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
                 {/* 错误标题 */}
                 <View style={styles.header}>
-                    <ThemeText 
-                        fontSize="title" 
-                        fontWeight="bold" 
+                    <ThemeText
+                        fontSize="title"
+                        fontWeight="bold"
                         style={[styles.title, { color: colors.text }]}
                     >
                         🙈 哎呀，程序崩了...
@@ -158,9 +159,9 @@ function ErrorFallback({ error, errorInfo }: ErrorFallbackProps) {
 
                 {/* 错误详情 */}
                 <View style={[styles.errorBox, { backgroundColor: colors.card, borderColor: colors.divider }]}>
-                    <ThemeText 
-                        fontSize="subTitle" 
-                        fontWeight="bold" 
+                    <ThemeText
+                        fontSize="subTitle"
+                        fontWeight="bold"
                         style={[styles.errorTitle, { color: colors.text }]}
                     >
                         🐛 错误详情
@@ -169,7 +170,7 @@ function ErrorFallback({ error, errorInfo }: ErrorFallbackProps) {
                         {error?.message || "未知错误"}
                     </Text>
                     {error?.stack && (
-                        <ScrollView 
+                        <ScrollView
                             style={styles.stackContainer}
                             showsVerticalScrollIndicator={true}
                             nestedScrollEnabled={true}
@@ -183,15 +184,16 @@ function ErrorFallback({ error, errorInfo }: ErrorFallbackProps) {
 
                 {/* 组件堆栈信息 */}
                 {errorInfo?.componentStack && (
-                    <View style={[styles.errorBox, { backgroundColor: colors.card, borderColor: colors.divider }]}>
-                        <ThemeText 
-                            fontSize="subTitle" 
-                            fontWeight="bold" 
+                    <View style={[styles.errorBox, { backgroundColor: colors.card, borderColor: colors.divider }]} >
+                        <ThemeText
+                            fontSize="subTitle"
+                            fontWeight="bold"
                             style={[styles.errorTitle, { color: colors.text }]}
                         >
                             📍 组件堆栈
                         </ThemeText>
-                        <ScrollView 
+                        <Icon name={ss}></Icon>
+                        <ScrollView
                             style={styles.stackContainer}
                             showsVerticalScrollIndicator={true}
                             nestedScrollEnabled={true}
@@ -205,33 +207,33 @@ function ErrorFallback({ error, errorInfo }: ErrorFallbackProps) {
 
                 {/* 反馈建议 */}
                 <View style={styles.feedbackSection}>
-                    <ThemeText 
-                        fontSize="subTitle" 
-                        fontWeight="bold" 
+                    <ThemeText
+                        fontSize="subTitle"
+                        fontWeight="bold"
                         style={[styles.feedbackTitle, { color: colors.text }]}
                     >
                         💌 请帮忙反馈一下这个问题吧
                     </ThemeText>
-                    
+
                     <View style={styles.feedbackOptions}>
                         {/* GitHub Issue */}
                         <View style={[styles.feedbackItem, { backgroundColor: colors.card, borderColor: colors.divider }]}>
-                            <ThemeText 
-                                fontSize="content" 
+                            <ThemeText
+                                fontSize="content"
                                 fontWeight="medium"
                                 style={[styles.feedbackLabel, { color: colors.text }]}
                             >
                                 📝 GitHub Issues (推荐):
                             </ThemeText>
-                            <LinkText 
+                            <LinkText
                                 fontSize="content"
                                 linkTo="https://github.com/maotoumao/MusicFree/issues"
                                 style={styles.link}
                             >
                                 https://github.com/maotoumao/MusicFree/issues
                             </LinkText>
-                            <ThemeText 
-                                fontSize="description" 
+                            <ThemeText
+                                fontSize="description"
                                 style={[styles.feedbackHint, { color: colors.textSecondary }]}
                             >
                                 点击链接或复制粘贴到浏览器打开
@@ -240,21 +242,21 @@ function ErrorFallback({ error, errorInfo }: ErrorFallbackProps) {
 
                         {/* 微信公众号 */}
                         <View style={[styles.feedbackItem, { backgroundColor: colors.card, borderColor: colors.divider }]}>
-                            <ThemeText 
-                                fontSize="content" 
+                            <ThemeText
+                                fontSize="content"
                                 fontWeight="medium"
                                 style={[styles.feedbackLabel, { color: colors.text }]}
                             >
                                 💬 微信公众号【一只猫头猫】:
                             </ThemeText>
                             <View style={styles.qrCodeContainer}>
-                                <Image 
-                                    source={ImgAsset.wechatChannel} 
+                                <Image
+                                    source={ImgAsset.wechatChannel}
                                     style={styles.qrCode}
                                     resizeMode="contain"
                                 />
-                                <ThemeText 
-                                    fontSize="description" 
+                                <ThemeText
+                                    fontSize="description"
                                     style={[styles.qrCodeHint, { color: colors.textSecondary }]}
                                 >
                                     扫描二维码关注公众号反馈

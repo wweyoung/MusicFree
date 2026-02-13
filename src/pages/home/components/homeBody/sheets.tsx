@@ -13,8 +13,8 @@ import useColors from "@/hooks/useColors";
 import rpx from "@/utils/rpx";
 import Toast from "@/utils/toast";
 import {FlashList} from "@shopify/flash-list";
-import React, {useMemo, useState} from "react";
-import {View} from "react-native";
+import React, {useMemo, useRef, useState} from "react";
+import {StyleSheet, View} from "react-native";
 import {TouchableWithoutFeedback} from "react-native-gesture-handler";
 import Tag from "@/components/base/tag";
 
@@ -25,7 +25,7 @@ export default function Sheets() {
 
     const allSheets = useSheetsBase();
     const staredSheets = useStarredSheets();
-    const { t } = useI18N();
+    const {t} = useI18N();
 
     const selectedTabTextStyle = useMemo(() => {
         return [
@@ -35,8 +35,8 @@ export default function Sheets() {
             },
         ];
     }, [colors]);
-
-
+    const [pressingSheet, setPressingSheet] = useState(undefined);
+    const pressingTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
     return (
         <>
             <View style={styles.subTitleContainer}>
@@ -115,11 +115,11 @@ export default function Sheets() {
                 </View>
             </View>
             <FlashList
-                ListEmptyComponent={<Empty />}
-                extraData={{ t }}
+                ListEmptyComponent={<Empty/>}
+                extraData={{t}}
                 data={(index === 0 ? allSheets : staredSheets) ?? []}
                 estimatedItemSize={ListItem.Size.big}
-                renderItem={({ item: sheet }) => {
+                renderItem={({item: sheet}) => {
                     const isLocalSheet = !(
                         sheet.platform && sheet.platform !== localPluginPlatform
                     );
@@ -138,7 +138,15 @@ export default function Sheets() {
                                         sheetInfo: sheet,
                                     });
                                 }
-                            }}>
+                            }}
+                            onLongPress={()=>{
+                                clearTimeout(pressingTimerRef.current);
+                                setPressingSheet(sheet)
+                                pressingTimerRef.current = setTimeout(()=>{
+                                    setPressingSheet(undefined);
+                                }, 2000)
+                            }}
+                        >
                             <ListItem.ListItemImage
                                 uri={sheet.coverImg ?? sheet.artwork}
                                 fallbackImg={ImgAsset.albumDefault}
@@ -157,11 +165,12 @@ export default function Sheets() {
                                         fontColor="textSecondary"
                                         style={[ListItem.styles.contentDesc]}>
                                         {!isLocalSheet && sheet?.platform && <Tag tagName={sheet?.platform}/>}
-                                        {(sheet?.worksNum || sheet?.worksNum == 0) && <Tag tagName={t("home.songCount", { count: sheet.worksNum })}/>}
+                                        {(sheet?.worksNum || sheet?.worksNum == 0) &&
+                                        <Tag tagName={t("home.songCount", {count: sheet.worksNum})}/>}
                                     </ThemeText>
                                 }
                             />
-                            {sheet.id !== MusicSheet.defaultSheet.id ? (
+                            {sheet.id !== MusicSheet.defaultSheet.id && pressingSheet === sheet ? (
                                 <ListItem.ListItemIcon
                                     position="right"
                                     icon="trash-outline"

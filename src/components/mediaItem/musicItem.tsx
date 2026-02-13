@@ -9,6 +9,8 @@ import TitleAndTag from "./titleAndTag";
 import ThemeText from "../base/themeText";
 import TrackPlayer from "@/core/trackPlayer";
 import Icon from "@/components/base/icon.tsx";
+import {useI18N} from "@/core/i18n";
+import {MotionPlayIcon} from "@/components/mediaItem/MotionPlayIcon";
 
 interface IMusicItemProps {
     index?: string | number;
@@ -35,6 +37,8 @@ export default function MusicItem(props: IMusicItemProps) {
         containerStyle,
         highlight = false,
     } = props;
+
+    const {t} = useI18N();
 
     return (
         <ListItem
@@ -91,14 +95,8 @@ export default function MusicItem(props: IMusicItemProps) {
                 }
             />
             {showMoreIcon ? (
-                <ListItem.ListItemIcon
-                    fixedWidth={true}
-                    width={rpx(42)}
-                    position="right"
-                    icon="motion-play"
-                    onPress={() => {
-                        TrackPlayer.addNext(musicItem);
-                    }}
+                <MotionPlayIcon
+                    musicItem={musicItem}
                 />
             ) : null}
             {showMoreIcon ? (

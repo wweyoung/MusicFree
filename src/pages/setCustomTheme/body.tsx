@@ -1,22 +1,23 @@
 import Image from "@/components/base/image";
 import ThemeText from "@/components/base/themeText";
-import { showPanel } from "@/components/panels/usePanel";
-import { ImgAsset } from "@/constants/assetsConst";
+import {ImgAsset} from "@/constants/assetsConst";
 import globalStyle from "@/constants/globalStyle";
 import pathConst from "@/constants/pathConst";
-import { useI18N } from "@/core/i18n";
+import {useI18N} from "@/core/i18n";
 import Theme from "@/core/theme";
-import { CustomizedColors } from "@/hooks/useColors";
-import { grayRate } from "@/utils/colorUtil";
+import {CustomizedColors} from "@/hooks/useColors";
+import {grayRate} from "@/utils/colorUtil";
 import rpx from "@/utils/rpx";
 import Slider from "@react-native-community/slider";
 import Color from "color";
 import React from "react";
-import { StyleSheet, View } from "react-native";
-import { copyFile } from "react-native-fs";
-import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import ImageColors from "react-native-image-colors";
-import { launchImageLibrary } from "react-native-image-picker";
+import {StyleSheet, View} from "react-native";
+import {copyFile} from "react-native-fs";
+import {ScrollView, TouchableOpacity} from "react-native-gesture-handler";
+import RNImageColors from "react-native-image-colors";
+import {launchImageLibrary} from "react-native-image-picker";
+import ThemeColors from "@/pages/setting/settingTypes/themeSetting/themeColors";
+import {errorLog} from "@/utils/log";
 
 export default function Body() {
     const theme = Theme.useTheme();
@@ -38,7 +39,7 @@ export default function Body() {
             )}`;
             await copyFile(uri, bgPath);
 
-            const colorsResult = await ImageColors.getColors(uri, {
+            const colorsResult = await RNImageColors.getColors(uri, {
                 fallback: "#ffffff",
             });
             const colors = {
@@ -120,6 +121,7 @@ export default function Body() {
             // });
         } catch (e) {
             console.log(e);
+            errorLog("设置自定义背景失败", e);
         }
     }
 
@@ -169,51 +171,7 @@ export default function Body() {
                     value={backgroundInfo?.opacity ?? 0.7}
                 />
             </View>
-            <View style={styles.colorsContainer}>
-                {Theme.configableColorKey.map(key => (
-                    <View key={key} style={styles.colorItem}>
-                        <ThemeText>{t("setCustomTheme." + key + "Color" as any)}</ThemeText>
-                        <TouchableOpacity
-                            onPress={() => {
-                                showPanel("ColorPicker", {
-                                    // @ts-ignore
-                                    defaultColor: theme.colors[key],
-                                    onSelected(color) {
-                                        Theme.setColors({
-                                            [key]: color.hexa().toString(),
-                                        });
-                                    },
-                                });
-                            }}
-                            style={styles.colorItemBlockContainer}>
-                            <View style={[styles.colorBlockContainer]}>
-                                <Image
-                                    resizeMode="repeat"
-                                    emptySrc={ImgAsset.transparentBg}
-                                    style={styles.transparentBg}
-                                />
-                                <View
-                                    style={[
-                                        {
-                                            /** @ts-ignore */
-                                            backgroundColor: theme.colors[key],
-                                        },
-                                        styles.colorBlock,
-                                    ]}
-                                />
-                            </View>
-                            <ThemeText
-                                fontSize="subTitle"
-                                style={styles.colorText}>
-                                {
-                                    /** @ts-ignore */
-                                    Color(theme.colors[key]).hexa().toString()
-                                }
-                            </ThemeText>
-                        </TouchableOpacity>
-                    </View>
-                ))}
-            </View>
+            <ThemeColors/>
         </ScrollView>
     );
 }

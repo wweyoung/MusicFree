@@ -1,18 +1,18 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import {StyleSheet, View} from "react-native";
 import rpx from "@/utils/rpx";
-import { iconSizeConst } from "@/constants/uiConst";
+import {iconSizeConst} from "@/constants/uiConst";
 import TranslationIcon from "@/assets/icons/translation.svg";
-import { useAppConfig } from "@/core/appConfig";
 import useColors from "@/hooks/useColors";
 import Toast from "@/utils/toast";
-import { hidePanel, showPanel } from "@/components/panels/usePanel";
+import {hidePanel, showPanel} from "@/components/panels/usePanel";
 import TrackPlayer from "@/core/trackPlayer";
 import PersistStatus from "@/utils/persistStatus";
 import useOrientation from "@/hooks/useOrientation";
 import HeartIcon from "../heartIcon";
 import Icon from "@/components/base/icon.tsx";
-import lyricManager, { useLyricState } from "@/core/lyricManager";
+import lyricManager, {useLyricState} from "@/core/lyricManager";
+import {ROUTE_PATH, useNavigate} from "@/core/router";
 
 interface ILyricOperationsProps {
     scrollToCurrentLrcItem: () => void;
@@ -21,7 +21,7 @@ interface ILyricOperationsProps {
 export default function LyricOperations(props: ILyricOperationsProps) {
     const { scrollToCurrentLrcItem } = props;
 
-    const detailFontSize = useAppConfig("lyric.detailFontSize");
+    const detailFontSize = PersistStatus.useValue("lyric.detailFontSize");
 
     const { hasTranslation } = useLyricState();
     const showTranslation = PersistStatus.useValue(
@@ -30,6 +30,7 @@ export default function LyricOperations(props: ILyricOperationsProps) {
     );
     const colors = useColors();
     const orientation = useOrientation();
+    const navigate = useNavigate();
 
     return (
         <View style={styles.container}>
@@ -42,7 +43,6 @@ export default function LyricOperations(props: ILyricOperationsProps) {
                     showPanel("SetFontSize", {
                         defaultSelect: detailFontSize ?? 1,
                         onSelectChange(value) {
-                            PersistStatus.set("lyric.detailFontSize", value);
                             scrollToCurrentLrcItem();
                         },
                     });
@@ -67,30 +67,7 @@ export default function LyricOperations(props: ILyricOperationsProps) {
                     }
                 }}
             />
-
-            <Icon
-                name="magnifying-glass"
-                size={iconSizeConst.normal}
-                color="white"
-                onPress={() => {
-                    const currentMusic = TrackPlayer.currentMusic;
-                    if (!currentMusic) {
-                        return;
-                    }
-                    // if (
-                    //     Config.get('setting.basic.associateLyricType') ===
-                    //     'input'
-                    // ) {
-                    //     showPanel('AssociateLrc', {
-                    //         musicItem: currentMusic,
-                    //     });
-                    // } else {
-                    showPanel("SearchLrc", {
-                        musicItem: currentMusic,
-                    });
-                    // }
-                }}
-            />
+            {hasTranslation &&
             <TranslationIcon
                 width={iconSizeConst.normal}
                 height={iconSizeConst.normal}
@@ -110,6 +87,17 @@ export default function LyricOperations(props: ILyricOperationsProps) {
                         !showTranslation,
                     );
                     scrollToCurrentLrcItem();
+                }}
+            />
+            }
+            <Icon
+                name="lyric-setting"
+                size={iconSizeConst.normal}
+                color="white"
+                onPress={() => {
+                    navigate(ROUTE_PATH.SETTING, {
+                        type: "lyric",
+                    });
                 }}
             />
             <Icon

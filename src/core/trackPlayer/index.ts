@@ -32,6 +32,7 @@ import minDistance from "@/utils/minDistance";
 import {IPluginManager} from "@/types/core/pluginManager";
 import {ImgAsset} from "@/constants/assetsConst";
 import {resolveImportedAssetOrPath} from "@/utils/fileUtils";
+import lyricManager from "@/core/lyricManager";
 
 
 const currentMusicAtom = atom<IMusic.IMusicItem | null>(null);
@@ -59,7 +60,6 @@ class TrackPlayer extends EventEmitter<{
     private serviceInited = false;
     // 播放队列索引map
     private playListIndexMap = createMediaIndexMap([] as IMusic.IMusicItem[]);
-
 
     private static maxMusicQueueLength = 10000;
     private static halfMaxMusicQueueLength = 5000;
@@ -622,6 +622,7 @@ class TrackPlayer extends EventEmitter<{
 
     async pause(): Promise<void> {
         await ReactNativeTrackPlayer.pause();
+        lyricManager.hideStatusBarLyric();
     }
 
     toggleRepeatMode(): void {

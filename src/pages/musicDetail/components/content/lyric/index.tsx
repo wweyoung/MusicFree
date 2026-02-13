@@ -49,6 +49,7 @@ export default function Lyric(props: IProps) {
         false,
     );
     const fontSizeKey = PersistStatus.useValue("lyric.detailFontSize", 1);
+    const textAlign = PersistStatus.useValue("lyric.detailTextAlign", 'center');
     const fontSizeStyle = useMemo(
         () => ({
             fontSize: fontSizeMap[fontSizeKey!],
@@ -72,7 +73,7 @@ export default function Lyric(props: IProps) {
     const dragShownRef = useRef(false);
 
     // 组件是否挂载
-    const isMountedRef = useRef(false);
+    const isMountedRef = useRef(true);
 
     // 用来缓存高度
     const itemHeightsRef = useRef<IItemHeights>({});
@@ -99,7 +100,6 @@ export default function Lyric(props: IProps) {
 
     // 滚到当前item
     const scrollToCurrentLrcItem = useCallback(() => {
-        console.log("scrollToCurrentLrcItem")
         if (!listRef.current) {
             return;
         }
@@ -108,14 +108,12 @@ export default function Lyric(props: IProps) {
 
     const delayedScrollToCurrentLrcItem = () => {
         let sto: number;
-        console.log("delayedScrollToCurrentLrcItem")
 
         if (sto) {
             clearTimeout(sto);
         }
         sto = setTimeout(() => {
-            console.log("scrollToCurrentLrcItem 111")
-            scrollToIndex(currentLrcItem?.index, false);
+            scrollToIndex(currentLrcItem?.index, true);
         }, 500) as any;
     };
 
@@ -136,7 +134,7 @@ export default function Lyric(props: IProps) {
     useEffect(() => {
         scrollToCurrentLrcItem();
         return () => {
-            isMountedRef.current = true;
+            isMountedRef.current = false;
         };
     }, []);
 
@@ -276,6 +274,7 @@ export default function Lyric(props: IProps) {
                             maxToRenderPerBatch={15}
                             overScrollMode="never"
                             extraData={currentLrcItem}
+                            showsVerticalScrollIndicator={false}
                             renderItem={({ item, index }) => {
                                 let text = item.lrc;
                                 if (showTranslation && hasTranslation) {
@@ -287,6 +286,7 @@ export default function Lyric(props: IProps) {
                                         index={index}
                                         text={text}
                                         fontSize={fontSizeStyle.fontSize}
+                                        textAlign={textAlign}
                                         onLayout={handleLyricItemLayout}
                                         light={draggingIndex === index}
                                         highlight={

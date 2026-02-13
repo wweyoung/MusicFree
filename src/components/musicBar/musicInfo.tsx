@@ -42,7 +42,7 @@ function _BarMusicItem(props: IBarMusicItemProps) {
 
     // 用 useMemo 缓存 children，只有依赖数组中的变量变化时，才重新创建 children
     const titleMemo = useMemo(() => {
-        return (<ScrollLineView scrollType={isPaused || activeIndex != 0 ? 'none' : 'continue'} speed={0.8} sleepTime={3000}>
+        return (<ScrollLineView scrollType={isPaused || activeIndex != 0 ? 'none' : 'continue'}>
             <ThemeText fontSize="content" fontColor="musicBarText">
                 {musicItem?.title}
             </ThemeText>
@@ -58,13 +58,14 @@ function _BarMusicItem(props: IBarMusicItemProps) {
             )}
         </ScrollLineView>);
     }, [musicItem?.title, musicItem?.artist, isPaused, activeIndex]); // 空依赖数组 → 仅挂载时创建一次，引用永久稳定
-
+    const duration = (currentLyricItem?.duration ?? 0) * 1000;
     // 用 useMemo 缓存 children，只有依赖数组中的变量变化时，才重新创建 children
     const lrcMemo = useMemo(() => {
-        return (<ScrollLineView scrollType={isPaused ? 'none' : 'once'} duration={currentLyricItem?.duration}>
+        return (<ScrollLineView scrollType={isPaused ? 'none' : 'once'} duration={duration}
+                                sleepTime={duration / 10}>
             {currentLyricItem && (
                 <ThemeText fontSize="subTitle" fontColor="musicBarText" numberOfLines={1}>
-                    {currentLyricItem?.lrc}
+                    {currentLyricItem?.lrc || ' '}
                 </ThemeText>
             )}
         </ScrollLineView>);

@@ -68,11 +68,8 @@ module.exports = async function () {
         TrackPlayer.seekTo(evt.position);
     });
 
-    RNTrackPlayer.addEventListener('remote-custom-action', async evt => {
+    RNTrackPlayer.addEventListener(Event.RemoteSetRating, async evt => {
         trace(evt);
-        if (evt.action === 'action_favorite') {
-
-        }
     });
 
     // RNTrackPlayer.addEventListener('remote-action', async evt => {

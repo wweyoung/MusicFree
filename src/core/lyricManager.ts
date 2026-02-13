@@ -11,7 +11,6 @@ import {Plugin} from "./pluginManager";
 import pathConst from "@/constants/pathConst";
 import LyricUtil from "@/native/lyricUtil";
 import {checkAndCreateDir} from "@/utils/fileUtils";
-import PersistStatus from "@/utils/persistStatus";
 import CryptoJs from "crypto-js";
 import {unlink, writeFile} from "react-native-fs";
 import RNTrackPlayer, {Event} from "react-native-track-player";
@@ -64,60 +63,35 @@ class LyricManager implements IInjectable {
         this.trackPlayer.on(TrackPlayerEvents.CurrentMusicChanged, (musicItem) => {
             this.refreshLyric(true, true);
 
-            if (this.appConfig.getConfig("lyric.showStatusBarLyric")) {
-                if (musicItem) {
-                    LyricUtil.setStatusBarLyricText(
-                        `${musicItem.title} - ${musicItem.artist}`,);
-                } else {
-                    LyricUtil.setStatusBarLyricText("MusicFree");
-                }
-            }
+            this.refreshStatusBarLyricText();
         });
 
-        let lyricClearTimeout;
-        RNTrackPlayer.addEventListener(Event.PlaybackProgressUpdated, evt => {
+        RNTrackPlayer.addEventListener(Event.PlaybackProgressUpdated, async evt => {
             const parser = this.lyricParser;
             if (!parser || !this.trackPlayer.isCurrentMusic(parser.musicItem)) {
                 return;
             }
 
             const currentLyricItem = getDefaultStore().get(currentLyricItemAtom);
-            const newLyricItem = parser.getPosition(evt.position + 0.4);
+            const newLyricItem = parser.getPosition(evt.position + 0.8);
 
             let isShowStatusBar = this.appConfig.getConfig("lyric.showStatusBarLyric");
             if (isShowStatusBar) {
-                LyricUtil.isShowStatusBar().then(isShow => {
+                await LyricUtil.isShowStatusBar().then(isShow => {
                     if (!isShow) {
                         // 桌面歌词被隐藏，重新打开
                         this.showStatusBarLyric();
                     }
                 });
-                clearTimeout(lyricClearTimeout);
-                lyricClearTimeout = setTimeout(() => {
-                    LyricUtil.hideStatusBarLyric();
-                    lyricClearTimeout = null;
-                }, 3000);
             }
 
-            if (currentLyricItem?.lrc !== newLyricItem?.lrc) {
+            if (currentLyricItem?.index !== newLyricItem?.index) {
                 // 更新当前歌词状态
                 getDefaultStore().set(currentLyricItemAtom, newLyricItem ?? null);
-
-                if (isShowStatusBar) {
-                    // 更新状态栏歌词
-                    const showTranslation = PersistStatus.get("lyric.showTranslation");
-
-                    LyricUtil.setStatusBarLyricText(
-                        (newLyricItem?.lrc ?? "") +
-                        (showTranslation
-                            ? `\n${newLyricItem?.translation ?? ""}`
-                            : ""),
-                    );
-                }
+                this.refreshStatusBarLyricText(isShowStatusBar);
             }
         });
-
-        this.showStatusBarLyric();
+        this.refreshLyric(true);
     }
 
     showStatusBarLyric() {
@@ -135,6 +109,7 @@ class LyricManager implements IInjectable {
                 "MusicFree",
                 statusBarLyricConfig ?? {}
             );
+            this.refreshStatusBarLyricText();
         }
         this.refreshLyric(true);
     }
@@ -257,10 +232,7 @@ class LyricManager implements IInjectable {
             hasTranslation: false,
         });
         getDefaultStore().set(currentLyricItemAtom, null);
-        if (this.appConfig.getConfig("lyric.showStatusBarLyric")) {
-            const musicItem = this.trackPlayer.currentMusic;
-            LyricUtil.setStatusBarLyricText(musicItem ? `${musicItem.title} - ${musicItem.artist}` : "MusicFree");
-        }
+        this.refreshStatusBarLyricText();
     }
 
     private async refreshLyric(skipFetchLyricSourceIfSame: boolean = true, ignoreProgress: boolean = false) {
@@ -326,25 +298,32 @@ class LyricManager implements IInjectable {
             });
 
             const currentLyric = ignoreProgress ? (this.lyricParser.getLyricItems()?.[0] ?? null) : this.lyricParser.getPosition((await this.trackPlayer.getProgress()).position);
+            const lastLyricItem = getDefaultStore().get(currentLyricItemAtom);
+            if (currentLyric?.index === lastLyricItem?.index) {
+                return; // 歌词没变
+            }
             getDefaultStore().set(currentLyricItemAtom, currentLyric || null);
 
-            if (this.appConfig.getConfig("lyric.showStatusBarLyric")) {
-                if (currentLyric) {
-                    LyricUtil.setStatusBarLyricText(
-                        (currentLyric?.lrc ?? "") +
-                        (this.lyricParser.hasTranslation
-                            ? `\n${currentLyric?.translation ?? ""}`
-                            : ""),
-                    );
-                } else {
-                    const musicItem = this.trackPlayer.currentMusic;
-                    LyricUtil.setStatusBarLyricText(musicItem ? `${musicItem.title} - ${musicItem.artist}` : "MusicFree");
-                }
-            }
+            this.refreshStatusBarLyricText();
         } catch (err) {
             if (this.trackPlayer.isCurrentMusic(currentMusicItem)) {
                 this.lyricParser = null;
                 this.setLyricAsNoLyricState();
+            }
+        }
+    }
+
+    private refreshStatusBarLyricText(showStatusBarLyric?) {
+        if (showStatusBarLyric || this.appConfig.getConfig("lyric.showStatusBarLyric")) {
+            const currentLyric = getDefaultStore().get(currentLyricItemAtom);
+            const musicItem = this.trackPlayer.currentMusic;
+            if (currentLyric) {
+                LyricUtil.setStatusBarLyricText(currentLyric?.lrc ?? "", currentLyric.duration ?? -1);
+            } else if (musicItem) {
+                LyricUtil.setStatusBarLyricText(
+                    `${musicItem.title} - ${musicItem.artist}`, -1);
+            } else {
+                LyricUtil.setStatusBarLyricText("MusicFree", -1);
             }
         }
     }
@@ -416,7 +395,9 @@ class LyricManager implements IInjectable {
 
         return null;
     }
-
+    hideStatusBarLyric(){
+        LyricUtil.hideStatusBarLyric();
+    }
 }
 
 const lyricManager = new LyricManager();
