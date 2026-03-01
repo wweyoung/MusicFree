@@ -17,14 +17,15 @@ import PluginSheetDetail from "@/pages/pluginSheetDetail";
 import History from "@/pages/history";
 import SetCustomTheme from "@/pages/setCustomTheme";
 import Permissions from "@/pages/permissions";
-import { ROUTE_PATH } from "@/core/router/index.ts";
+import {ROUTE_PATH} from "@/core/router/index.ts";
 
 type ValueOf<T> = T[keyof T];
 export type RoutePaths = ValueOf<typeof ROUTE_PATH>;
 
 type IRoutes = {
-  path: RoutePaths;
-  component: (...args: any[]) => JSX.Element;
+    path: RoutePaths;
+    component: (...args: any[]) => JSX.Element;
+    options?: any;
 };
 
 
@@ -36,6 +37,9 @@ export const routes: Array<IRoutes> = [
     {
         path: ROUTE_PATH.MUSIC_DETAIL,
         component: MusicDetail,
+        options: {
+            animation: "slide_from_bottom",
+        }
     },
     {
         path: ROUTE_PATH.TOP_LIST,

@@ -1,14 +1,16 @@
 import repeatModeConst from "@/constants/repeatModeConst";
 import rpx from "@/utils/rpx";
 import React from "react";
-import {InteractionManager, StyleSheet, View} from "react-native";
+import {InteractionManager, Pressable, StyleSheet, View} from "react-native";
 
 import Icon from "@/components/base/icon.tsx";
 import TrackPlayer, {useMusicState, useRepeatMode} from "@/core/trackPlayer";
 import useOrientation from "@/hooks/useOrientation";
 import delay from "@/utils/delay";
-import {musicIsPaused} from "@/utils/trackUtils";
+import {musicIsBuffering, musicIsPaused} from "@/utils/trackUtils";
 import PlayListIcon from "@/components/musicBar/playListIcon";
+import {WaveLoader} from "@/pages/musicDetail/components/bottom/waveLoading";
+import {CircularProgressBase} from "react-native-circular-progress-indicator";
 
 export default function () {
     const repeatMode = useRepeatMode();
@@ -20,7 +22,7 @@ export default function () {
         <>
             <View
                 style={[
-                    style.wrapper,
+                    styles.wrapper,
                     orientation === "horizontal"
                         ? {
                             marginTop: 0,
@@ -46,18 +48,34 @@ export default function () {
                         TrackPlayer.skipToPrevious();
                     }}
                 />
-                <Icon
-                    color={"white"}
-                    name={musicIsPaused(musicState) ? "play" : "pause"}
-                    size={rpx(96)}
-                    onPress={() => {
-                        if (musicIsPaused(musicState)) {
-                            TrackPlayer.play();
-                        } else {
-                            TrackPlayer.pause();
-                        }
-                    }}
-                />
+                <Pressable onPress={() => {
+                    if (musicIsBuffering(musicState)) {
+                        return;
+                    }
+                    if (musicIsPaused(musicState)) {
+                        TrackPlayer.play();
+                    } else {
+                        TrackPlayer.pause();
+                    }
+                }}>
+                    <CircularProgressBase
+                        activeStrokeWidth={rpx(2)}
+                        inActiveStrokeWidth={rpx(2)}
+                        radius={rpx(60)}
+                        activeStrokeColor="white"
+                        inActiveStrokeColor="white">
+                        {musicIsBuffering(musicState) ? (
+                            <WaveLoader color={"white"} size={rpx(96)} style={styles.playButton}/>
+                        ) : (
+                            <Icon
+                                color={"white"}
+                                name={musicIsPaused(musicState) ? "play" : "pause"}
+                                size={rpx(72)}
+                                style={styles.playButton}
+                            />
+                        )}
+                    </CircularProgressBase>
+                </Pressable>
                 <Icon
                     color={"white"}
                     name={"skip-right"}
@@ -72,13 +90,16 @@ export default function () {
     );
 }
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
     wrapper: {
         width: "100%",
         marginTop: rpx(36),
-        height: rpx(100),
+        height: rpx(140),
         flexDirection: "row",
         justifyContent: "space-around",
         alignItems: "center",
     },
+    playButton: {
+        margin: rpx(100)
+    }
 });

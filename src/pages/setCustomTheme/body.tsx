@@ -81,17 +81,17 @@ export default function Body() {
                     appBar: colors.primary,
                     primary: primaryColor
                         .darken(primaryGrayRate * 5)
-                        .toString(),
+                        .rgb().hexa().toString(),
                     musicBar: colors.primary,
                     card: "rgba(0,0,0,0.2)",
-                    tabBar: primaryColor.alpha(0.2).toString(),
+                    tabBar: primaryColor.alpha(0.2).rgb().hexa().toString(),
                 };
             } else if (primaryGrayRate > 0.4) {
                 themeColors = {
                     appBar: colors.primary,
                     primary: Color(colors.primary)
                         .darken(primaryGrayRate * 5)
-                        .toString(),
+                        .rgb().hexa().toString(),
                     musicBar: colors.primary,
                     card: "rgba(0,0,0,0.2)",
                 };
@@ -102,7 +102,7 @@ export default function Body() {
                     appBar: colors.primary,
                     primary: Color(colors.primary)
                         .saturate(Math.abs(primaryGrayRate) * 2 + 2)
-                        .toString(),
+                        .rgb().hexa().toString(),
                     musicBar: colors.primary,
                     card: "rgba(0,0,0,0.2)",
                 };

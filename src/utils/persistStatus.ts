@@ -39,6 +39,7 @@ interface IPersistStatus {
     /** 歌词-详情页字体大小 */
     "lyric.detailFontSize": number;
 
+    /** 歌词-详情页对齐方式 */
     "lyric.detailTextAlign": string;
 }
 

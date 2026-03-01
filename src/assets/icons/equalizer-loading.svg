@@ -1,0 +1,13 @@
+<svg class="wave-loader" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="60" height="60">
+    <!-- 左1 -->
+    <rect x="133" y="337" width="30" height="294" rx="15" fill="#525252" class="bar bar-1"/>
+    <!-- 左2 -->
+    <rect x="353" y="249" width="30" height="526" rx="15" fill="#525252" class="bar bar-2"/>
+    <!-- 中 -->
+    <rect x="514" y="118" width="30" height="788" rx="15" fill="#525252" class="bar bar-3"/>
+    <!-- 右2 -->
+    <rect x="733" y="249" width="30" height="526" rx="15" fill="#525252" class="bar bar-4"/>
+    <!-- 右1 -->
+    <rect x="894" y="337" width="30" height="294" rx="15" fill="#525252" class="bar bar-5"/>
+</svg>
+

@@ -1,11 +1,11 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import {StyleSheet} from "react-native";
 
 import NavBar from "./components/navBar";
 import MusicBar from "@/components/musicBar";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import {createDrawerNavigator} from "@react-navigation/drawer";
 import HomeDrawer from "./components/drawer";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {SafeAreaView} from "react-native-safe-area-context";
 import StatusBar from "@/components/base/statusBar";
 import HorizontalSafeAreaView from "@/components/base/horizontalSafeAreaView.tsx";
 import globalStyle from "@/constants/globalStyle";
@@ -13,6 +13,7 @@ import Theme from "@/core/theme";
 import HomeBody from "./components/homeBody";
 import HomeBodyHorizontal from "./components/homeBodyHorizontal";
 import useOrientation from "@/hooks/useOrientation";
+import rpx from "@/utils/rpx";
 
 function Home() {
     const orientation = useOrientation();
@@ -67,6 +68,7 @@ export default function App() {
                 headerShown: false,
                 drawerStyle: {
                     width: "80%",
+                    maxWidth: rpx(600)
                 },
             }}
             initialRouteName="HOME-MAIN"

@@ -11,7 +11,6 @@ import useOrientation from "@/hooks/useOrientation";
 import {showPanel} from "@/components/panels/usePanel";
 import TrackPlayer, {useCurrentMusic, useMusicQuality} from "@/core/trackPlayer";
 import {iconSizeConst} from "@/constants/uiConst";
-import PersistStatus from "@/utils/persistStatus";
 import HeartIcon from "../heartIcon";
 import Icon from "@/components/base/icon.tsx";
 import PluginManager from "@/core/pluginManager";
@@ -23,7 +22,6 @@ export default function Operations() {
     const currentQuality = useMusicQuality();
     const isDownloaded = LocalMusicSheet.useIsLocal(musicItem);
 
-    const rate = PersistStatus.useValue("music.rate", 100);
     const orientation = useOrientation();
 
     const supportComment = useMemo(() => {
@@ -101,7 +99,7 @@ export default function Operations() {
                     }
                 }}
             />}
-            <Icon
+            {orientation === "vertical" && <Icon
                 name="ellipsis-vertical"
                 size={iconSizeConst.normal}
                 color="white"
@@ -113,7 +111,7 @@ export default function Operations() {
                         });
                     }
                 }}
-            />
+            />}
         </View>
     );
 }

@@ -142,6 +142,7 @@ function setTheme(
                 ...(extra?.colors ?? {}),
             },
         });
+        console.log( themeStore.getValue().colors)
         Config.setConfig("theme.defaultColors", themeStore.getValue().colors);
     }
 

@@ -1,4 +1,5 @@
-import { State } from "react-native-track-player";
+import {State} from "react-native-track-player";
+import {trace} from "@/utils/log";
 
 /**
  * 音乐是否处于停止状态
@@ -13,5 +14,7 @@ export const musicIsPaused = (state: State | undefined) =>
  * @param state
  * @returns
  */
-export const musicIsBuffering = (state: State | undefined) =>
-    state === State.Loading || state === State.Buffering;
+export const musicIsBuffering = (state: State | undefined) => {
+    trace("播放状态", state)
+    return state === State.Loading || state === State.Buffering;
+}

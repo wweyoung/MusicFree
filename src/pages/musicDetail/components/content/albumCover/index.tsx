@@ -28,8 +28,6 @@ export default function AlbumCover(props: IProps) {
         "lyric.showTranslation",
         false,
     );
-    const detailFontSize = PersistStatus.useValue("lyric.detailFontSize");
-
     const artworkStyle = useMemo(() => {
         if (orientation === "vertical") {
             return {
@@ -65,7 +63,7 @@ export default function AlbumCover(props: IProps) {
     return (
         <>
             <GestureDetector gesture={combineGesture}>
-                <View style={[globalStyle.fullCenter, {gap: rpx(70)}]}>
+                <View style={[globalStyle.fullCenter, {gap: rpx(100)}]}>
                     <FastImage
                         style={artworkStyle}
                         source={musicItem?.artwork}

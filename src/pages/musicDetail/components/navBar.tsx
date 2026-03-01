@@ -31,7 +31,7 @@ export default function NavBar() {
     return (
         <View style={styles.container}>
             <IconButton
-                name="arrow-left"
+                name="chevron-down"
                 sizeType={"normal"}
                 color="white"
                 style={styles.button}
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
     },
     button: {
-        marginHorizontal: rpx(24),
+        marginHorizontal: rpx(40),
     },
     headerContent: {
         flex: 1,

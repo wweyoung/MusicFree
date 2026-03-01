@@ -1,21 +1,21 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import {NavigationContainer} from "@react-navigation/native";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import bootstrap from "./bootstrap/bootstrap";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {GestureHandlerRootView} from "react-native-gesture-handler";
 import Dialogs from "@/components/dialogs";
 import Panels from "@/components/panels";
 import PageBackground from "@/components/base/pageBackground";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import {SafeAreaProvider} from "react-native-safe-area-context";
 import Debug from "@/components/debug";
-import { PortalHost } from "@/components/base/portal";
+import {PortalHost} from "@/components/base/portal";
 import globalStyle from "@/constants/globalStyle";
 import Theme from "@/core/theme";
-import { BootstrapComponent } from "./bootstrap/BootstrapComponent";
-import { ToastBaseComponent } from "@/components/base/toast";
-import { StatusBar } from "react-native";
-import { ReduceMotion, ReducedMotionConfig } from "react-native-reanimated";
-import { routes } from "@/core/router/routes.tsx";
+import {BootstrapComponent} from "./bootstrap/BootstrapComponent";
+import {ToastBaseComponent} from "@/components/base/toast";
+import {StatusBar} from "react-native";
+import {ReducedMotionConfig, ReduceMotion} from "react-native-reanimated";
+import {routes} from "@/core/router/routes.tsx";
 import ErrorBoundary from "@/components/errorBoundary";
 
 /**
@@ -51,9 +51,10 @@ export default function Pages() {
                                     key={route.path}
                                     name={route.path}
                                     component={route.component}
+                                    options={route.options}
                                 />
                             ))}
-                        </Stack.Navigator>                        
+                        </Stack.Navigator>
                         <Panels />
                         <Dialogs />
                         <Debug />

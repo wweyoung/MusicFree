@@ -4,7 +4,7 @@ import {useI18N} from "@/core/i18n";
 import {createRadio, createSwitch} from "@/utils/componentUtil";
 import LyricUtil, {NativeTextAlignment} from "@/native/lyricUtil";
 import Toast from "@/utils/toast";
-import {StyleSheet, View} from "react-native";
+import {ScrollView, StyleSheet, View} from "react-native";
 import ListItem from "@/components/base/listItem";
 import ThemeText from "@/components/base/themeText";
 import Slider from "@react-native-community/slider";
@@ -131,6 +131,7 @@ export function LyricSetting() {
     );
 
     return (
+        <ScrollView>
         <View>
             <ListItem
                 withHorizontalPadding
@@ -282,13 +283,15 @@ export function LyricSetting() {
             </View>
             }
         </View>
+        </ScrollView>
     );
 }
 
 const lyricStyles = StyleSheet.create({
     slider: {
-        flex: 1,
+        width:"100%",
         marginLeft: rpx(24),
+        maxWidth: rpx(1000),
     },
     sliderContainer: {
         height: rpx(96),
@@ -296,5 +299,6 @@ const lyricStyles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         paddingHorizontal: rpx(24),
+        justifyContent: 'space-between',
     },
 });

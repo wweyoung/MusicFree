@@ -10,7 +10,6 @@ import ThemeText from "../base/themeText";
 import TrackPlayer from "@/core/trackPlayer";
 import Icon from "@/components/base/icon.tsx";
 import {useI18N} from "@/core/i18n";
-import {MotionPlayIcon} from "@/components/mediaItem/MotionPlayIcon";
 
 interface IMusicItemProps {
     index?: string | number;
@@ -95,8 +94,14 @@ export default function MusicItem(props: IMusicItemProps) {
                 }
             />
             {showMoreIcon ? (
-                <MotionPlayIcon
-                    musicItem={musicItem}
+                <ListItem.ListItemIcon
+                    fixedWidth={true}
+                    width={rpx(42)}
+                    position="right"
+                    icon="motion-play"
+                    onPress={() => {
+                        TrackPlayer.addNext(props.musicItem);
+                    }}
                 />
             ) : null}
             {showMoreIcon ? (

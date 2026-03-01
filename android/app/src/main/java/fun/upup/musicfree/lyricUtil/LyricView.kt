@@ -3,6 +3,7 @@ package `fun`.upup.musicfree.lyricUtil
 import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.graphics.PixelFormat
@@ -27,7 +28,6 @@ import com.facebook.react.bridge.ReactContext
 class LyricView(private val reactContext: ReactContext) : Activity(), View.OnTouchListener {
 
     private var windowManager: WindowManager? = null
-    private var orientationEventListener: OrientationEventListener? = null
     private var layoutParams: WindowManager.LayoutParams? = null
     private var container: FrameLayout? = null
     private var tv: TextView? = null
@@ -36,6 +36,7 @@ class LyricView(private val reactContext: ReactContext) : Activity(), View.OnTou
     private var yPadding = 12
     private var text = ""
     private var duration: Double = 0.0
+
     // 窗口信息
     private var windowWidth = 0.0
     private var windowHeight = 0.0
@@ -102,8 +103,8 @@ class LyricView(private val reactContext: ReactContext) : Activity(), View.OnTou
 
                     // layout_width = WRAP_CONTENT,实现TextView宽度与文本宽度一致
                     layoutParams = FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.WRAP_CONTENT,
-                        FrameLayout.LayoutParams.WRAP_CONTENT
+                            FrameLayout.LayoutParams.WRAP_CONTENT,
+                            FrameLayout.LayoutParams.WRAP_CONTENT
                     ).apply {
                         gravity = Gravity.START // 为实现从左往右滚动，文本在TextView需要居左
                     }
@@ -136,7 +137,6 @@ class LyricView(private val reactContext: ReactContext) : Activity(), View.OnTou
                 topPercent?.toString()?.toDouble()?.let { setTopPercent(it) }
 
                 setText(initText ?: "", 0.0)
-                listenOrientationChange()
             }
         } catch (e: Exception) {
             hideLyricWindow()
@@ -148,46 +148,36 @@ class LyricView(private val reactContext: ReactContext) : Activity(), View.OnTou
     private val ORIENTATION_PORTRAIT = 0
     private val ORIENTATION_LANDSCAPE = 1
 
-    private fun listenOrientationChange() {
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        val isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+        // 只在真正旋转时才更新
         if (windowManager == null) return
+        // 先延迟一小段时间，让系统旋转动画和 Display 刷新完成
+        container?.postDelayed({
+            val outMetrics = DisplayMetrics()
+            windowManager?.defaultDisplay?.getMetrics(outMetrics)
 
-        if (orientationEventListener == null) {
-            orientationEventListener = object : OrientationEventListener(reactContext, SensorManager.SENSOR_DELAY_NORMAL) {
-                override fun onOrientationChanged(orientation: Int) {
-                    if (windowManager == null) {
-                        return
-                    }
-                    val currentOrientation = if (orientation in 45..135 || orientation in 225..315) {
-                        ORIENTATION_LANDSCAPE
-                    } else {
-                        ORIENTATION_PORTRAIT
-                    }
-                    if (currentOrientation == lastOrientation) return
-                    lastOrientation = currentOrientation
+            val newWidth = outMetrics.widthPixels.toDouble()
+            val newHeight = outMetrics.heightPixels.toDouble()
 
-                    val outMetrics = DisplayMetrics()
-                    windowManager?.defaultDisplay?.getMetrics(outMetrics)
-                    val newWindowWidth = outMetrics.widthPixels.toDouble()
-                    val newWindowHeight = outMetrics.heightPixels.toDouble()
-                    if (newWindowWidth == windowWidth && newWindowHeight == windowHeight) return
-                    windowWidth = newWindowWidth
-                    windowHeight = newWindowHeight
+            if (newWidth == windowWidth && newHeight == windowHeight) return@postDelayed
 
-                    layoutParams?.width = (widthPercent * windowWidth).toInt()
-                    layoutParams?.x = (leftPercent * (windowWidth - layoutParams!!.width)).toInt()
-                    layoutParams?.y = (topPercent * (windowHeight - (tv?.height ?: 0))).toInt()
-                    windowManager?.updateViewLayout(container, layoutParams)
-                }
-            }
-        }
+            windowWidth = newWidth
+            windowHeight = newHeight
 
-        if (orientationEventListener?.canDetectOrientation() == true) {
-            orientationEventListener?.enable()
-        }
-    }
+            // 横竖屏不同的百分比逻辑（可根据需要调整）
+            val effectiveWidth = if (isLandscape) windowHeight else windowWidth  // 横屏时宽高互换
+            val effectiveHeight = if (isLandscape) windowWidth else windowHeight
 
-    private fun unlistenOrientationChange() {
-        orientationEventListener?.disable()
+            layoutParams?.width = (widthPercent * effectiveWidth).toInt()
+            layoutParams?.x = (leftPercent * (effectiveWidth - layoutParams!!.width)).toInt()
+            layoutParams?.y = (topPercent * (effectiveHeight - (tv?.height ?: 0))).toInt()
+
+            windowManager?.updateViewLayout(container, layoutParams)
+        }, 150)  // 150ms ~ 300ms，根据实际测试调整
     }
 
     private fun rgba2argb(color: String): String {
@@ -214,7 +204,6 @@ class LyricView(private val reactContext: ReactContext) : Activity(), View.OnTou
             tv = null
             windowManager = null
             layoutParams = null
-            unlistenOrientationChange()
         }
     }
 

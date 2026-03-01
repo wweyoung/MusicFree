@@ -18,6 +18,7 @@ import ChatBubbleOvalLeftEllipsisIcon from "@/assets/icons/chat-bubble-oval-left
 import CheckCircleOutlineIcon from "@/assets/icons/check-circle-outline.svg";
 import CheckCircleIcon from "@/assets/icons/check-circle.svg";
 import CheckIcon from "@/assets/icons/check.svg";
+import ChevronDownIcon from "@/assets/icons/chevron-down.svg";
 import CircleStackIcon from "@/assets/icons/circle-stack.svg";
 import ClockOutlineIcon from "@/assets/icons/clock-outline.svg";
 import CodeBracketSquareIcon from "@/assets/icons/code-bracket-square.svg";
@@ -25,6 +26,7 @@ import Cog8ToothIcon from "@/assets/icons/cog-8-tooth.svg";
 import CrossHairIcon from "@/assets/icons/crosshair.svg";
 import DocumentOutlineIcon from "@/assets/icons/document-outline.svg";
 import EllipsisVerticalIcon from "@/assets/icons/ellipsis-vertical.svg";
+import EqualizerLoadingIcon from "@/assets/icons/equalizer-loading.svg";
 import ExclamationCircleIcon from "@/assets/icons/exclamation-circle.svg";
 import FireOutlineIcon from "@/assets/icons/fire-outline.svg";
 import FireIcon from "@/assets/icons/fire.svg";
@@ -95,6 +97,7 @@ export type IIconName =
     | "check-circle-outline"
     | "check-circle"
     | "check"
+    | "chevron-down"
     | "circle-stack"
     | "clock-outline"
     | "code-bracket-square"
@@ -102,6 +105,7 @@ export type IIconName =
     | "crosshair"
     | "document-outline"
     | "ellipsis-vertical"
+    | "equalizer-loading"
     | "exclamation-circle"
     | "fire-outline"
     | "fire"
@@ -179,6 +183,7 @@ export const iconMap = {
     "check-circle-outline": CheckCircleOutlineIcon,
     "check-circle": CheckCircleIcon,
     check: CheckIcon,
+    "chevron-down": ChevronDownIcon,
     "circle-stack": CircleStackIcon,
     "clock-outline": ClockOutlineIcon,
     "code-bracket-square": CodeBracketSquareIcon,
@@ -186,6 +191,7 @@ export const iconMap = {
     crosshair: CrossHairIcon,
     "document-outline": DocumentOutlineIcon,
     "ellipsis-vertical": EllipsisVerticalIcon,
+    "equalizer-loading": EqualizerLoadingIcon,
     "exclamation-circle": ExclamationCircleIcon,
     "fire-outline": FireOutlineIcon,
     fire: FireIcon,

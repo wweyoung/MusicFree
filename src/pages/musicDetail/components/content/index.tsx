@@ -20,7 +20,9 @@ export default function Content() {
     const layout = useWindowDimensions();
     const orientation = useOrientation();
 
-    const [index, setIndex] = useState(initialTab === "lyric" ? 1 : 0);
+    const canSwipe = orientation === "vertical"; // 橫屏不讓滑動
+
+    const [index, setIndex] = useState(initialTab === "lyric" && orientation === "vertical" ? 1 : 0);
 
     const [routes] = useState([
         { key: "album" },
@@ -36,7 +38,6 @@ export default function Content() {
     }, [orientation]);
 
     // 是否允許滑動切換
-    const canSwipe = orientation === "vertical"; // 橫屏不讓滑動
 
     // 核心改造：自定义圆点式 TabBar
     const renderDotTabBar = (
