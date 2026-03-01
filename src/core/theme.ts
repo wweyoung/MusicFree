@@ -78,6 +78,13 @@ export const darkTheme = {
     },
 };
 
+export const customTheme = {
+    colors: {
+        card: "rgba(0,0,0,0.2)",
+        placeholder: "#42424299",
+    }
+}
+
 interface IBackgroundInfo {
     url?: string;
     blur?: number;
@@ -106,10 +113,21 @@ export function getCurrentThemeDefault() {
     }
 }
 
+export function getCurrentTheme() {
+    const currentTheme = Config.getConfig("theme.selectedTheme") ?? "p-light";
+
+    return {
+        id: currentTheme,
+        dark: currentTheme !== "p-light",
+        // @ts-ignore
+        colors: (Config.getConfig("theme.colors") as CustomizedColors)
+    };
+}
+
 
 function setup() {
     const currentTheme = Config.getConfig("theme.selectedTheme") ?? "p-light";
-    themeStore.setValue(getCurrentThemeDefault());
+    themeStore.setValue(getCurrentTheme());
 
     const bgUrl = Config.getConfig("theme.background");
     const bgBlur = Config.getConfig("theme.backgroundBlur");
@@ -139,6 +157,7 @@ function setTheme(
             dark: true,
             colors: {
                 ...darkTheme.colors,
+                ...customTheme.colors,
                 ...(extra?.colors ?? {}),
             },
         });

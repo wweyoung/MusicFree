@@ -7,16 +7,19 @@ import FastImage from "@/components/base/fastImage";
 import PlayAllBar from "@/components/base/playAllBar";
 import useColors from "@/hooks/useColors";
 import Tag from "@/components/base/tag";
+import {useI18N} from "@/core/i18n";
 
 interface IHeaderProps {
     musicSheet: IMusic.IMusicSheetItem | null;
     musicList: IMusic.IMusicItem[] | null;
     canStar?: boolean;
 }
+
 export default function Header(props: IHeaderProps) {
-    const { musicSheet, musicList, canStar } = props;
+    const {musicSheet, musicList, canStar} = props;
     const colors = useColors();
 
+    const {t} = useI18N();
     const [maxLines, setMaxLines] = useState<number | undefined>(6);
 
     const toggleShowMore = () => {
@@ -28,7 +31,7 @@ export default function Header(props: IHeaderProps) {
     };
 
     return (
-        <View style={{ backgroundColor: colors.card }}>
+        <View style={{backgroundColor: colors.card}}>
             <View style={style.wrapper}>
                 <View style={style.content}>
                     <FastImage
@@ -40,16 +43,18 @@ export default function Header(props: IHeaderProps) {
                         <ThemeText numberOfLines={3}>
                             {musicSheet?.title}
                         </ThemeText>
-                        <Text>
-                            <Tag tagName={musicSheet?.platform}/>
-                        </Text>
+                        { musicSheet?.platform &&
+                            <Text>
+                                <Tag tagName={musicSheet?.platform}/>
+                            </Text>
+                        }
                         <ThemeText
                             fontColor="textSecondary"
                             fontSize="description">
-                            共
-                            {musicSheet?.worksNum ??
-                                (musicList ? musicList.length ?? 0 : "-")}
-                            首{" "}
+                            {t("sheetDetail.totalMusicCount", {
+                                count: musicSheet?.worksNum ??
+                                    (musicList ? musicList.length ?? 0 : "-"),
+                            })}
                         </ThemeText>
                     </View>
                 </View>

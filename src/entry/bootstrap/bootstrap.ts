@@ -210,7 +210,6 @@ export async function initTrackPlayer() {
         capabilities: capabilities,
         compactCapabilities: capabilities,
         notificationCapabilities: [...capabilities, Capability.SeekTo],
-        ratingType: RatingType.Heart
     });
     trace("播放器初始化完成");
     playerTimestamp.OptionsSetup = Date.now();

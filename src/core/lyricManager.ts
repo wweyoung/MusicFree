@@ -14,7 +14,7 @@ import {checkAndCreateDir} from "@/utils/fileUtils";
 import CryptoJs from "crypto-js";
 import {unlink, writeFile} from "react-native-fs";
 import RNTrackPlayer, {Event} from "react-native-track-player";
-import { TrackPlayerEvents } from "@/constants/trackPlayerConst";
+import {TrackPlayerEvents} from "@/constants/trackPlayerConst";
 import {IPluginManager} from "@/types/core/pluginManager";
 
 
@@ -281,7 +281,7 @@ class LyricManager implements IInjectable {
                 this.lyricParser = null;
                 return;
             }
-
+            console.log(lrcSource)
             this.lyricParser = new LyricParser(lrcSource.rawLrc!, {
                 extra: {
                     offset: (getMediaExtraProperty(currentMusicItem, "lyricOffset") || 0) * -1,

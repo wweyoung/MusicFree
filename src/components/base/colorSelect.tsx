@@ -32,7 +32,7 @@ export default function ColorSelect(props: IColorSelectProps) {
     return (
         <View style={[styles.container]}>
             {showOptions?.map((option, index) => {
-                const isSelected = index === selectIndex;
+                const isSelected = index === selectIndex || color === option;
                 return (
                 <Pressable key={index} onPress={() => {
                     if (custom && (isSelected || !option)) {

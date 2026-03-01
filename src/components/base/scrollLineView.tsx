@@ -180,7 +180,7 @@ const ScrollLineView = (props: ScrollLineViewProps) => {
     return (
         <View style={[styles.container, containerStyle]} onLayout={onContainerLayout}>
             <ScrollView
-                style={[styles.scrollView, globalStyle.notShrink]}
+                style={[styles.scrollView, globalStyle.noShrinkNoGrow]}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
                 scrollEnabled={false}           // ← 关键：禁止手动滚动，让 Animated 控制

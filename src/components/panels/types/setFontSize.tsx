@@ -26,7 +26,7 @@ export default function SetFontSize(props: IProps) {
     const [selected, setSelected] = useState(defaultSelect ?? 1);
     const textAlign = PersistStatus.useValue("lyric.detailTextAlign", 'center');
 
-    const textAlignRadio = createRadio(
+    const textAlignRadio = createRadio   (
         t("basicSettings.lyric.align"),
         "lyric.detailTextAlign",
         ['left', 'center'],

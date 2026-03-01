@@ -3,18 +3,18 @@ import Icon from "@/components/base/icon.tsx";
 import IconButton from "@/components/base/iconButton";
 import Input from "@/components/base/input";
 import Button from "@/components/base/textButton.tsx";
-import { iconSizeConst } from "@/constants/uiConst";
-import { useI18N } from "@/core/i18n";
+import {iconSizeConst} from "@/constants/uiConst";
+import {useI18N} from "@/core/i18n";
 import useColors from "@/hooks/useColors";
 import rpx from "@/utils/rpx";
 import Color from "color";
-import { useAtom, useSetAtom } from "jotai";
+import {useAtom, useSetAtom} from "jotai";
 import React from "react";
-import { StyleSheet, View } from "react-native";
-import { addHistory } from "../common/historySearch";
+import {StyleSheet, View} from "react-native";
+import {addHistory} from "../common/historySearch";
 import useSearch from "../hooks/useSearch";
-import { initSearchResults, PageStatus, pageStatusAtom, queryAtom, searchResultsAtom } from "../store/atoms";
-import { useParams } from "@/core/router";
+import {initSearchResults, PageStatus, pageStatusAtom, queryAtom, searchResultsAtom} from "../store/atoms";
+import {useParams} from "@/core/router";
 
 export default function NavBar() {
     const params = useParams<"search-page">();
@@ -54,7 +54,7 @@ export default function NavBar() {
                         style.searchBar,
                         {
                             color: colors.text,
-                            backgroundColor: colors.pageBackground,
+                            backgroundColor: colors.placeholder,
                         },
                     ]}
                     accessible

@@ -2,20 +2,20 @@ import Empty from "@/components/base/empty";
 import IconButton from "@/components/base/iconButton";
 import ListItem from "@/components/base/listItem";
 import ThemeText from "@/components/base/themeText";
-import { showDialog } from "@/components/dialogs/useDialog";
-import { showPanel } from "@/components/panels/usePanel";
-import { ImgAsset } from "@/constants/assetsConst";
-import { localPluginPlatform } from "@/constants/commonConst";
-import i18n, { useI18N } from "@/core/i18n";
-import MusicSheet, { useSheetsBase, useStarredSheets } from "@/core/musicSheet";
-import { ROUTE_PATH, useNavigate } from "@/core/router";
+import {showDialog} from "@/components/dialogs/useDialog";
+import {showPanel} from "@/components/panels/usePanel";
+import {ImgAsset} from "@/constants/assetsConst";
+import {localPluginPlatform} from "@/constants/commonConst";
+import i18n, {useI18N} from "@/core/i18n";
+import MusicSheet, {useSheetsBase, useStarredSheets} from "@/core/musicSheet";
+import {ROUTE_PATH, useNavigate} from "@/core/router";
 import useColors from "@/hooks/useColors";
 import rpx from "@/utils/rpx";
 import Toast from "@/utils/toast";
-import { FlashList } from "@shopify/flash-list";
+import {FlashList} from "@shopify/flash-list";
 import React, {useMemo, useRef, useState} from "react";
-import { StyleSheet, View } from "react-native";
-import { Pressable } from "react-native-gesture-handler";
+import {StyleSheet, View} from "react-native";
+import {Pressable} from "react-native-gesture-handler";
 import Tag from "@/components/base/tag";
 
 export default function Sheets() {
@@ -186,32 +186,44 @@ export default function Sheets() {
                                     </ThemeText>
                                 }
                             />
-                            {sheet.id !== MusicSheet.defaultSheet.id && pressingSheet === sheet ? (
+                            {pressingSheet === sheet ? (
+                                <>
                                 <ListItem.ListItemIcon
                                     position="right"
-                                    icon="trash-outline"
+                                    icon="pencil-outline"
                                     onPress={() => {
-                                        showDialog("SimpleDialog", {
-                                            title: t("dialog.deleteSheetTitle"),
-                                            content: t("dialog.deleteSheetContent", {
-                                                name: sheet.title,
-                                            }),
-                                            onOk: async () => {
-                                                if (isLocalSheet) {
-                                                    await MusicSheet.removeSheet(
-                                                        sheet.id,
-                                                    );
-                                                    Toast.success(t("toast.deleteSuccess"));
-                                                } else {
-                                                    await MusicSheet.unstarMusicSheet(
-                                                        sheet,
-                                                    );
-                                                    Toast.success(t("toast.hasUnstarred"));
-                                                }
-                                            },
+                                        navigate(ROUTE_PATH.EDIT_MUSIC_SHEET_INFO, {
+                                            musicSheet: sheet,
                                         });
                                     }}
                                 />
+                                    {sheet.id !== MusicSheet.defaultSheet.id &&
+                                    <ListItem.ListItemIcon
+                                        position="right"
+                                        icon="trash-outline"
+                                        onPress={() => {
+                                            showDialog("SimpleDialog", {
+                                                title: t("dialog.deleteSheetTitle"),
+                                                content: t("dialog.deleteSheetContent", {
+                                                    name: sheet.title,
+                                                }),
+                                                onOk: async () => {
+                                                    if (isLocalSheet) {
+                                                        await MusicSheet.removeSheet(
+                                                            sheet.id,
+                                                        );
+                                                        Toast.success(t("toast.deleteSuccess"));
+                                                    } else {
+                                                        await MusicSheet.unstarMusicSheet(
+                                                            sheet,
+                                                        );
+                                                        Toast.success(t("toast.hasUnstarred"));
+                                                    }
+                                                },
+                                            });
+                                        }}
+                                    />}
+                                </>
                             ) : null}
                         </ListItem>
                     );

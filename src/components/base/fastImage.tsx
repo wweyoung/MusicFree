@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {ImageRequireSource} from "react-native";
-import { Image, ImageProps} from "expo-image";
-import {ImgAsset} from "@/constants/assetsConst";
+import {Image, ImageProps} from "expo-image";
 import {errorLog} from "@/utils/log";
 
 interface IImageProps {
@@ -28,6 +27,7 @@ export default function (props: IImageProps) {
                     }
                 };
             } catch (e) {
+                setIsError(true);
                 errorLog("图片url解析失败", e);
             }
         }
