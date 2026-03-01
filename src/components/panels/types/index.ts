@@ -18,7 +18,6 @@ import TimingClose from "./timingClose";
 import ImageViewer from "./imageViewer";
 import MusicComment from "./musicComment";
 import MusicItemLyricOptions from "./musicItemLyricOptions";
-import EditMusicSheetInfo from "./editMusicSheetInfo";
 import UploadMusicItem from "@/components/panels/types/uploadMusicItem";
 import LyricSettingPanel from "@/components/panels/types/lyricSettingPanel";
 
@@ -61,8 +60,8 @@ export default {
     ImageViewer,
     /** 音乐评论 */
     MusicComment,
+    /** 歌词操作 */
     MusicItemLyricOptions,
-    EditMusicSheetInfo,
     UploadMusicItem,
     LyricSettingPanel
 };

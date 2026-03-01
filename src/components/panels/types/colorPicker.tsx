@@ -3,7 +3,7 @@ import {Image, StyleSheet, View} from "react-native";
 import rpx from "@/utils/rpx";
 import PanelBase from "../base/panelBase";
 import LinearGradient from "react-native-linear-gradient";
-import Color from "color";
+import Color, { ColorInstance } from "color";
 import {Gesture, GestureDetector, TextInput} from "react-native-gesture-handler";
 import {hidePanel} from "../usePanel";
 import {ImgAsset} from "@/constants/assetsConst";
@@ -13,7 +13,7 @@ import ColorSelect from "@/components/base/colorSelect";
 
 interface IColorPickerProps {
     defaultColor?: string;
-    onSelected?: (color: Color) => void;
+    onSelected?: (color: ColorInstance) => void;
     closePanelWhenSelected?: boolean;
     selectOptions?: string[]
 }
@@ -28,7 +28,7 @@ export default function ColorPicker(props: IColorPickerProps) {
         selectOptions
     } = props;
 
-    const {t} = useI18N();
+    const { t } = useI18N();
 
     const [currentHue, setCurrentHue] = useState(Color(defaultColor).hue());
     const [currentSaturation, setCurrentSaturation] = useState(
@@ -109,7 +109,7 @@ export default function ColorPicker(props: IColorPickerProps) {
 
     const slTap = Gesture.Tap()
         .onStart(event => {
-            const {x, y} = event;
+            const { x, y } = event;
             handleSLUpdate(x, y);
         })
         .runOnJS(true);
@@ -120,7 +120,7 @@ export default function ColorPicker(props: IColorPickerProps) {
             const newTimeStamp = Date.now();
             if (newTimeStamp - lastTimestampRef.current > 32) {
                 lastTimestampRef.current = newTimeStamp;
-                const {x, y} = event;
+                const { x, y } = event;
                 handleSLUpdate(x, y);
             }
         })
@@ -130,14 +130,14 @@ export default function ColorPicker(props: IColorPickerProps) {
 
     const hueTap = Gesture.Tap()
         .onStart(event => {
-            const {y} = event;
+            const { y } = event;
             handleHueUpdate(y);
         })
         .runOnJS(true);
 
     const huePan = Gesture.Pan()
         .onUpdate(event => {
-            const {y} = event;
+            const { y } = event;
             handleHueUpdate(y);
         })
         .runOnJS(true);
@@ -146,14 +146,14 @@ export default function ColorPicker(props: IColorPickerProps) {
 
     const alphaTap = Gesture.Tap()
         .onStart(event => {
-            const {y} = event;
+            const { y } = event;
             handleAlphaUpdate(y);
         })
         .runOnJS(true);
 
     const alphaPan = Gesture.Pan()
         .onUpdate(event => {
-            const {y} = event;
+            const { y } = event;
             handleAlphaUpdate(y);
         })
         .runOnJS(true);

@@ -14,7 +14,7 @@ import {checkAndCreateDir} from "@/utils/fileUtils";
 import CryptoJs from "crypto-js";
 import {unlink, writeFile} from "react-native-fs";
 import RNTrackPlayer, {Event} from "react-native-track-player";
-import {TrackPlayerEvents} from "@/core.defination/trackPlayer";
+import { TrackPlayerEvents } from "@/constants/trackPlayerConst";
 import {IPluginManager} from "@/types/core/pluginManager";
 
 
@@ -111,6 +111,7 @@ class LyricManager implements IInjectable {
             );
             this.refreshStatusBarLyricText();
         }
+
         this.refreshLyric(true);
     }
 

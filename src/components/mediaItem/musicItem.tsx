@@ -1,10 +1,10 @@
 import React from "react";
-import {StyleProp, StyleSheet, View, ViewStyle} from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import rpx from "@/utils/rpx";
 import ListItem from "../base/listItem";
 
 import LocalMusicSheet from "@/core/localMusicSheet";
-import {showPanel} from "../panels/usePanel";
+import { showPanel } from "../panels/usePanel";
 import TitleAndTag from "./titleAndTag";
 import ThemeText from "../base/themeText";
 import TrackPlayer from "@/core/trackPlayer";
@@ -57,7 +57,7 @@ export default function MusicItem(props: IMusicItemProps) {
             {Left ? <Left /> : null}
             {index !== undefined ? (
                 <ListItem.ListItemText
-                    width={rpx(82)}
+                    width={rpx(86)}
                     position="none"
                     fixedWidth
                     fontColor={highlight ? "primary" : "text"}
@@ -96,7 +96,11 @@ export default function MusicItem(props: IMusicItemProps) {
             {showMoreIcon ? (
                 <ListItem.ListItemIcon
                     fixedWidth={true}
-                    width={rpx(42)}
+                    width={rpx(48)}
+                    hitSlop={{
+                        left: rpx(24),
+                        right: rpx(24),
+                    }}
                     position="right"
                     icon="motion-play"
                     onPress={() => {
@@ -108,6 +112,10 @@ export default function MusicItem(props: IMusicItemProps) {
                 <ListItem.ListItemIcon
                     fixedWidth
                     width={rpx(42)}
+                    hitSlop={{
+                        left: rpx(24),
+                        right: rpx(24),
+                    }}
                     position="right"
                     icon="ellipsis-vertical"
                     onPress={() => {

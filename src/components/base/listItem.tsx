@@ -1,5 +1,7 @@
 import React, {ReactNode} from "react";
 import {
+    ImageStyle,
+    Insets,
     StyleProp,
     StyleSheet,
     TextProps,
@@ -14,7 +16,6 @@ import useColors, {CustomizedColors} from "@/hooks/useColors";
 import ThemeText from "./themeText";
 import {fontSizeConst, fontWeightConst, iconSizeConst,} from "@/constants/uiConst";
 import FastImage from "./fastImage";
-import {ImageStyle} from "react-native-fast-image";
 import Icon, {IIconName} from "@/components/base/icon.tsx";
 
 interface IListItemProps {
@@ -132,9 +133,10 @@ interface IListItemIconProps {
     position?: "left" | "right" | "none";
     fixedWidth?: boolean;
     containerStyle?: StyleProp<ViewStyle>;
-    contentStyle?: StyleProp<TextStyle>;
+    contentStyle?: StyleProp<ViewStyle>;
     onPress?: () => void;
     color?: string;
+     hitSlop?: null | Insets | number | undefined;
 }
 
 function ListItemIcon(props: IListItemIconProps) {
@@ -148,6 +150,7 @@ function ListItemIcon(props: IListItemIconProps) {
         contentStyle,
         onPress,
         color,
+        hitSlop,
     } = props;
 
     const colors = useColors();
@@ -171,7 +174,7 @@ function ListItemIcon(props: IListItemIconProps) {
     );
 
     return onPress ? (
-        <TouchableOpacity onPress={onPress}>{innerContent}</TouchableOpacity>
+        <TouchableOpacity hitSlop={hitSlop} onPress={onPress}>{innerContent}</TouchableOpacity>
     ) : (
         innerContent
     );

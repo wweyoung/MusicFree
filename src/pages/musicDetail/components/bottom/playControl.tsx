@@ -1,4 +1,3 @@
-import repeatModeConst from "@/constants/repeatModeConst";
 import rpx from "@/utils/rpx";
 import React from "react";
 import {InteractionManager, Pressable, StyleSheet, View} from "react-native";
@@ -7,7 +6,8 @@ import Icon from "@/components/base/icon.tsx";
 import TrackPlayer, {useMusicState, useRepeatMode} from "@/core/trackPlayer";
 import useOrientation from "@/hooks/useOrientation";
 import delay from "@/utils/delay";
-import {musicIsBuffering, musicIsPaused} from "@/utils/trackUtils";
+import { musicIsBuffering, musicIsPaused } from "@/utils/trackUtils";
+import { MusicRepeatModeInfo } from "@/constants/trackPlayerConst";
 import PlayListIcon from "@/components/musicBar/playListIcon";
 import {WaveLoader} from "@/pages/musicDetail/components/bottom/waveLoading";
 import {CircularProgressBase} from "react-native-circular-progress-indicator";
@@ -24,14 +24,12 @@ export default function () {
                 style={[
                     styles.wrapper,
                     orientation === "horizontal"
-                        ? {
-                            marginTop: 0,
-                        }
+                        ? styles.marginTop0
                         : null,
                 ]}>
                 <Icon
                     color={"white"}
-                    name={repeatModeConst[repeatMode].icon}
+                    name={MusicRepeatModeInfo[repeatMode].icon}
                     size={rpx(56)}
                     onPress={async () => {
                         InteractionManager.runAfterInteractions(async () => {
@@ -101,5 +99,8 @@ const styles = StyleSheet.create({
     },
     playButton: {
         margin: rpx(100)
-    }
+    },
+    marginTop0: {
+        marginTop: 0,
+    },
 });

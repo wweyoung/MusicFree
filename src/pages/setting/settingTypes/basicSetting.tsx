@@ -8,6 +8,10 @@ import pathConst from "@/constants/pathConst";
 import Config, {useAppConfig} from "@/core/appConfig";
 import {useI18N} from "@/core/i18n";
 import {ROUTE_PATH, useNavigate} from "@/core/router";
+import useColors from "@/hooks/useColors";
+import LyricUtil, { NativeTextAlignment } from "@/native/lyricUtil";
+import { AppConfigPropertyKey } from "@/types/core/config";
+import appMeta from "@/utils/appMeta";
 import {clearCache, getCacheSize, sizeFormatter} from "@/utils/fileUtils";
 import {clearLog, getErrorLogContent} from "@/utils/log";
 import {qualityKeys} from "@/utils/qualities";
@@ -66,17 +70,18 @@ export default function BasicSetting() {
     const maxHistoryLen = useAppConfig("basic.maxHistoryLen");
     const autoUpdatePlugin = useAppConfig("basic.autoUpdatePlugin");
     const notCheckPluginVersion = useAppConfig("basic.notCheckPluginVersion");
-    const lazyLoadPlugin = useAppConfig("basic.lazyLoadPlugin");
     const associateLyricType = useAppConfig("basic.associateLyricType");
     const showExitOnNotification = useAppConfig("basic.showExitOnNotification");
     const musicOrderInLocalSheet = useAppConfig("basic.musicOrderInLocalSheet");
     const tryChangeSourceWhenPlayFail = useAppConfig("basic.tryChangeSourceWhenPlayFail");
 
-    const {t} = useI18N();
+    const { t } = useI18N();
 
     const debugEnableErrorLog = useAppConfig("debug.errorLog");
     const debugEnableTraceLog = useAppConfig("debug.traceLog");
     const debugEnableDevLog = useAppConfig("debug.devLog");
+    const disableTelemetry = useAppConfig("debug.disableTelemetry");
+    const telemetryAvailable = appMeta.telemetryAvailable;
 
     const navigate = useNavigate();
 
@@ -198,11 +203,6 @@ export default function BasicSetting() {
                     "basic.notCheckPluginVersion",
                     notCheckPluginVersion ?? false,
                 ),
-                createSwitch(
-                    t("basicSettings.lazyLoadPlugin"),
-                    "basic.lazyLoadPlugin",
-                    lazyLoadPlugin ?? false,
-                ),
             ],
         },
         {
@@ -286,7 +286,7 @@ export default function BasicSetting() {
                             style={styles.centerText}
                             numberOfLines={3}>
                             {downloadPath ??
-                            pathConst.downloadMusicPath}
+                                pathConst.downloadMusicPath}
                         </ThemeText>
                     ),
                     onPress() {
@@ -455,6 +455,18 @@ export default function BasicSetting() {
             title: t("basicSettings.developer"),
             data: [
                 createSwitch(
+                    t("basicSettings.developer.disableTelemetry"),
+                    "debug.disableTelemetry",
+                    telemetryAvailable ? (disableTelemetry ?? false) : false,
+                    (newVal) => {
+                        if (!telemetryAvailable) {
+                            Toast.warn(t("toast.telemetryNotAvailable"));
+                            return;
+                        }
+                        Config.setConfig("debug.disableTelemetry", newVal);
+                    }
+                ),
+                createSwitch(
                     t("basicSettings.developer.errorLog"),
                     "debug.errorLog",
                     debugEnableErrorLog ?? false,
@@ -500,8 +512,7 @@ export default function BasicSetting() {
                         try {
                             await clearLog();
                             Toast.success(t("toast.logCleared"));
-                        } catch {
-                        }
+                        } catch { }
                     },
                 },
             ],
@@ -516,7 +527,7 @@ export default function BasicSetting() {
                 contentContainerStyle={styles.headerContentContainer}
                 horizontal
                 data={basicOptions.map(it => it.title)}
-                renderItem={({item, index}) => (
+                renderItem={({ item, index }) => (
                     <TouchableOpacity
                         onPress={() => {
                             sectionListRef.current?.scrollToLocation({
@@ -532,7 +543,7 @@ export default function BasicSetting() {
             />
             <SectionList
                 sections={basicOptions}
-                renderSectionHeader={({section}) => (
+                renderSectionHeader={({ section }) => (
                     <View style={styles.sectionHeader}>
                         <ThemeText
                             fontSize="subTitle"
@@ -543,10 +554,10 @@ export default function BasicSetting() {
                     </View>
                 )}
                 ref={sectionListRef}
-                renderSectionFooter={({section}) => {
+                renderSectionFooter={({ section }) => {
                     return section.footer ?? null;
                 }}
-                renderItem={({item}) => {
+                renderItem={({ item }) => {
                     const Right = item.right;
 
                     return (
@@ -554,7 +565,7 @@ export default function BasicSetting() {
                             withHorizontalPadding
                             heightType="small"
                             onPress={item.onPress}>
-                            <ListItem.Content title={item.title}/>
+                            <ListItem.Content title={item.title} />
                             {Right}
                         </ListItem>
                     );

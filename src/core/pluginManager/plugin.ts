@@ -196,7 +196,7 @@ class PluginMethodsWrapper implements IPlugin.IPluginInstanceMethods {
         // 1. 本地搜索 其实直接读mediameta就好了
         const localPathInMediaExtra = getMediaExtraProperty(musicItem, "localPath");
         const localPath = getLocalPath(musicItem);
-        if (localPath && (await exists(localPath))) {
+        if (localPath && (localPath.startsWith("content://") || await exists(localPath))) {
             trace("本地播放", localPath);
             if (localPathInMediaExtra !== localPath) {
                 // 修正一下本地数据
@@ -1081,8 +1081,10 @@ const localFilePluginDefine: IPlugin.IPluginDefine = {
                 CryptoJs.MD5(fileStat.originalFilepath).toString(
                     CryptoJs.enc.Hex,
                 ) || nanoid();
-        } catch {
-            id = nanoid();
+        } catch(e) {
+            id = CryptoJs.MD5(urlLike).toString(
+                CryptoJs.enc.Hex,
+            ) || nanoid();
         }
 
         return {

@@ -2,20 +2,20 @@ import Empty from "@/components/base/empty";
 import IconButton from "@/components/base/iconButton";
 import ListItem from "@/components/base/listItem";
 import ThemeText from "@/components/base/themeText";
-import {showDialog} from "@/components/dialogs/useDialog";
-import {showPanel} from "@/components/panels/usePanel";
-import {ImgAsset} from "@/constants/assetsConst";
-import {localPluginPlatform} from "@/constants/commonConst";
-import {useI18N} from "@/core/i18n";
-import MusicSheet, {useSheetsBase, useStarredSheets} from "@/core/musicSheet";
-import {ROUTE_PATH, useNavigate} from "@/core/router";
+import { showDialog } from "@/components/dialogs/useDialog";
+import { showPanel } from "@/components/panels/usePanel";
+import { ImgAsset } from "@/constants/assetsConst";
+import { localPluginPlatform } from "@/constants/commonConst";
+import i18n, { useI18N } from "@/core/i18n";
+import MusicSheet, { useSheetsBase, useStarredSheets } from "@/core/musicSheet";
+import { ROUTE_PATH, useNavigate } from "@/core/router";
 import useColors from "@/hooks/useColors";
 import rpx from "@/utils/rpx";
 import Toast from "@/utils/toast";
-import {FlashList} from "@shopify/flash-list";
+import { FlashList } from "@shopify/flash-list";
 import React, {useMemo, useRef, useState} from "react";
-import {StyleSheet, View} from "react-native";
-import {TouchableWithoutFeedback} from "react-native-gesture-handler";
+import { StyleSheet, View } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
 import Tag from "@/components/base/tag";
 
 export default function Sheets() {
@@ -25,7 +25,7 @@ export default function Sheets() {
 
     const allSheets = useSheetsBase();
     const staredSheets = useStarredSheets();
-    const {t} = useI18N();
+    const { t } = useI18N();
 
     const selectedTabTextStyle = useMemo(() => {
         return [
@@ -40,7 +40,7 @@ export default function Sheets() {
     return (
         <>
             <View style={styles.subTitleContainer}>
-                <TouchableWithoutFeedback
+                <Pressable
                     style={styles.tabContainer}
                     accessible
                     accessibilityLabel={t("home.myPlaylistsCount.a11y", {
@@ -66,8 +66,8 @@ export default function Sheets() {
                         {" "}
                         ({allSheets.length})
                     </ThemeText>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </Pressable>
+                <Pressable
                     style={styles.tabContainer}
                     accessible
                     accessibilityLabel={t("home.starredPlaylistsCount.a11y", {
@@ -93,7 +93,7 @@ export default function Sheets() {
                         {" "}
                         ({staredSheets.length})
                     </ThemeText>
-                </TouchableWithoutFeedback>
+                </Pressable>
                 <View style={styles.more}>
                     <IconButton
                         name="plus"
@@ -104,22 +104,38 @@ export default function Sheets() {
                             showPanel("CreateMusicSheet");
                         }}
                     />
-                    <IconButton
-                        name="inbox-arrow-down"
-                        sizeType="normal"
-                        accessibilityLabel={t("home.importPlaylist.a11y")}
-                        onPress={() => {
-                            showPanel("ImportMusicSheet");
-                        }}
-                    />
+                    <IconButton name='ellipsis-vertical' sizeType="normal" onPress={() => {
+                        showPanel("SimpleSelect", {
+                            header: i18n.t("home.playlistManagement.a11y"),
+                            height: rpx(360),
+                            candidates: [{
+                                title: i18n.t("home.managePlaylists.a11y"),
+                                icon: "pencil-square",
+                                value: "manageSheets",
+                            }, {
+                                title: i18n.t("home.importPlaylist.a11y"),
+                                icon: "inbox-arrow-down",
+                                value: "importSheets",
+                            }],
+                            onPress(item) {
+                                if (item.value === "manageSheets") {
+                                    navigate(ROUTE_PATH.SHEET_EDITOR, {
+                                        sheetType: index === 0 ? "local" : "starred",
+                                    });
+                                } else if (item.value === "importSheets") {
+                                    showPanel("ImportMusicSheet");
+                                }
+                            },
+                        });
+                    }} />
                 </View>
             </View>
             <FlashList
-                ListEmptyComponent={<Empty/>}
-                extraData={{t}}
+                ListEmptyComponent={<Empty />}
+                extraData={{ t }}
                 data={(index === 0 ? allSheets : staredSheets) ?? []}
                 estimatedItemSize={ListItem.Size.big}
-                renderItem={({item: sheet}) => {
+                renderItem={({ item: sheet }) => {
                     const isLocalSheet = !(
                         sheet.platform && sheet.platform !== localPluginPlatform
                     );
@@ -222,7 +238,7 @@ const styles = StyleSheet.create({
     },
 
     tabText: {
-        lineHeight: rpx(64),
+        lineHeight: rpx(60),
     },
     selectTabText: {
         borderBottomWidth: rpx(6),

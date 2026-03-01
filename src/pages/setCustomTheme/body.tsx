@@ -10,11 +10,12 @@ import {grayRate} from "@/utils/colorUtil";
 import rpx from "@/utils/rpx";
 import Slider from "@react-native-community/slider";
 import Color from "color";
+import { readAsStringAsync } from "expo-file-system";
 import React from "react";
 import {StyleSheet, View} from "react-native";
 import {copyFile} from "react-native-fs";
 import {ScrollView, TouchableOpacity} from "react-native-gesture-handler";
-import RNImageColors from "react-native-image-colors";
+import ImageColors from "react-native-image-colors";
 import {launchImageLibrary} from "react-native-image-picker";
 import ThemeColors from "@/pages/setting/settingTypes/themeSetting/themeColors";
 import {errorLog} from "@/utils/log";
@@ -39,9 +40,16 @@ export default function Body() {
             )}`;
             await copyFile(uri, bgPath);
 
-            const colorsResult = await RNImageColors.getColors(uri, {
+            const base64Data = await readAsStringAsync(uri, {
+                encoding: "base64",
+            });
+            const base64DataWithPrefix = `data:image/${uri
+                .substring(uri.lastIndexOf(".") + 1) ?? "jpg"};base64,${base64Data}`;
+
+            const colorsResult = await ImageColors.getColors(base64DataWithPrefix, {
                 fallback: "#ffffff",
             });
+
             const colors = {
                 primary:
                     colorsResult.platform === "android"
@@ -107,7 +115,6 @@ export default function Body() {
                     card: "rgba(0,0,0,0.2)",
                 };
             }
-
             Theme.setTheme("custom", {
                 colors: themeColors,
                 background: {
