@@ -1,9 +1,9 @@
 /** 备份与恢复 */
 /** 歌单、插件 */
-import { compare } from "compare-versions";
+import {compare} from "compare-versions";
 import PluginManager from "./pluginManager";
 import MusicSheet from "@/core/musicSheet";
-import { ResumeMode } from "@/constants/commonConst.ts";
+import {ResumeMode} from "@/constants/commonConst.ts";
 
 /**
  * 结果：一份大的json文件
@@ -38,7 +38,11 @@ async function resume(
 ) {
     let obj: IBackJson;
     if (typeof raw === "string") {
-        obj = JSON.parse(raw);
+        try {
+            obj = JSON.parse(raw);
+        } catch {
+            throw new Error("备份文件格式无效");
+        }
     } else {
         obj = raw as IBackJson;
     }

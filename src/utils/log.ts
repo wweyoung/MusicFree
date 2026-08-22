@@ -1,8 +1,8 @@
-import { fileAsyncTransport, logger } from "react-native-logs";
-import RNFS, { readDir, readFile } from "react-native-fs";
+import {fileAsyncTransport, logger} from "react-native-logs";
+import RNFS, {readDir, readFile} from "react-native-fs";
 import pathConst from "@/constants/pathConst";
 import Config from "../core/appConfig.ts";
-import { addLog } from "@/lib/react-native-vdebug/src/log";
+import {addLog} from "@/lib/react-native-vdebug/src/log";
 
 const config = {
     transport: fileAsyncTransport,
@@ -51,7 +51,9 @@ export async function clearLog() {
             if (file.isFile()) {
                 try {
                     await RNFS.unlink(file.path);
-                } catch {}
+                } catch {
+                    // 文件可能已被删除，忽略
+                }
             }
         }),
     );
