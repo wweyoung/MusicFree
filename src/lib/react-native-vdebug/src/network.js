@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Clipboard, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
 import event from './event';
 import {debounce} from './tool';
+import copyText from "@/utils/copyText";
 
 let ajaxStack = null;
 
@@ -289,7 +290,7 @@ class Network extends Component {
         let cURL = `curl -X ${item.method} '${item.url}' ${headerStr}`;
         if (item.method === 'POST' && item.postData)
             cURL += ` --data-binary '${item.postData}'`;
-        Clipboard.setString(cURL);
+        copyText(cURL);
     }
 
     retryFetch(item) {
@@ -374,7 +375,7 @@ class Network extends Component {
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => {
-                                    Clipboard.setString(_item.response);
+                                    copyText(_item.response);
                                 }}>
                                 <Text>{'[ Copy response to clipboard ]'}</Text>
                             </TouchableOpacity>

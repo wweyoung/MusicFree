@@ -24,6 +24,8 @@ interface IPersistStatus {
     "music.rate": number;
     /** 音质 */
     "music.quality": IMusic.IQualityKey;
+    /** 歌单id */
+    "music.sheet": IMusic.IMusicSheetItemBase;
     /** app */
     "app.skipVersion": string;
     /** 开屏弹窗 */

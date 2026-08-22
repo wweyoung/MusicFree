@@ -107,8 +107,9 @@ export default function LyricOperations(props: ILyricOperationsProps) {
                 onPress={() => {
                     const currentMusic = TrackPlayer.currentMusic;
                     if (currentMusic) {
-                        showPanel("MusicItemLyricOptions", {
+                        showPanel("MusicItemOptions", {
                             musicItem: currentMusic,
+                            type: 'lyric'
                         });
                     }
                 }}

@@ -71,10 +71,6 @@ class LyricManager implements IInjectable {
             if (!parser || !this.trackPlayer.isCurrentMusic(parser.musicItem)) {
                 return;
             }
-
-            const currentLyricItem = getDefaultStore().get(currentLyricItemAtom);
-            const newLyricItem = parser.getPosition(evt.position + 0.8);
-
             let isShowStatusBar = this.appConfig.getConfig("lyric.showStatusBarLyric");
             if (isShowStatusBar) {
                 await LyricUtil.isShowStatusBar().then(isShow => {
@@ -84,14 +80,24 @@ class LyricManager implements IInjectable {
                     }
                 });
             }
-
-            if (currentLyricItem?.index !== newLyricItem?.index) {
-                // 更新当前歌词状态
-                getDefaultStore().set(currentLyricItemAtom, newLyricItem ?? null);
-                this.refreshStatusBarLyricText(isShowStatusBar);
-            }
+            this.refreshCurrentLyric(evt.position + 0.8);
         });
         this.refreshLyric(true);
+    }
+
+    async refreshCurrentLyric(position?) {
+        if (!position) {
+            position = (await this.trackPlayer.getProgress()).position;
+        }
+
+        const currentLyric = this.lyricParser.getPosition(position);
+        const lastLyricItem = getDefaultStore().get(currentLyricItemAtom);
+        if (currentLyric?.index === lastLyricItem?.index) {
+            return; // 歌词没变
+        }
+        getDefaultStore().set(currentLyricItemAtom, currentLyric || null);
+
+        this.refreshStatusBarLyricText();
     }
 
     showStatusBarLyric() {
@@ -236,7 +242,7 @@ class LyricManager implements IInjectable {
         this.refreshStatusBarLyricText();
     }
 
-    private async refreshLyric(skipFetchLyricSourceIfSame: boolean = true, ignoreProgress: boolean = false) {
+    async refreshLyric(skipFetchLyricSourceIfSame: boolean = true, ignoreProgress: boolean = false) {
         const currentMusicItem = this.trackPlayer.currentMusic;
 
         // 如果没有当前音乐项，重置歌词状态
@@ -281,7 +287,6 @@ class LyricManager implements IInjectable {
                 this.lyricParser = null;
                 return;
             }
-            console.log(lrcSource)
             this.lyricParser = new LyricParser(lrcSource.rawLrc!, {
                 extra: {
                     offset: (getMediaExtraProperty(currentMusicItem, "lyricOffset") || 0) * -1,
@@ -297,15 +302,7 @@ class LyricManager implements IInjectable {
                 hasTranslation: !!lrcSource.translation,
                 meta: this.lyricParser.getMeta(),
             });
-
-            const currentLyric = ignoreProgress ? (this.lyricParser.getLyricItems()?.[0] ?? null) : this.lyricParser.getPosition((await this.trackPlayer.getProgress()).position);
-            const lastLyricItem = getDefaultStore().get(currentLyricItemAtom);
-            if (currentLyric?.index === lastLyricItem?.index) {
-                return; // 歌词没变
-            }
-            getDefaultStore().set(currentLyricItemAtom, currentLyric || null);
-
-            this.refreshStatusBarLyricText();
+            this.refreshCurrentLyric();
         } catch (err) {
             if (this.trackPlayer.isCurrentMusic(currentMusicItem)) {
                 this.lyricParser = null;

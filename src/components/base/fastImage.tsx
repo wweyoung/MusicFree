@@ -33,6 +33,8 @@ export default function (props: IImageProps) {
         }
     } else if (source){
         realSource = source;
+    } else {
+        realSource = placeholderSource;
     }
 
     useEffect(() => {

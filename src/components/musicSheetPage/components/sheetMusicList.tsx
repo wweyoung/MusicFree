@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import {View} from "react-native";
 
 import Loading from "@/components/base/loading";
 import Header from "./header";
@@ -8,10 +8,10 @@ import Config from "@/core/appConfig";
 import globalStyle from "@/constants/globalStyle";
 import HorizontalSafeAreaView from "@/components/base/horizontalSafeAreaView.tsx";
 import TrackPlayer from "@/core/trackPlayer";
-import { RequestStateCode } from "@/constants/commonConst";
+import {RequestStateCode} from "@/constants/commonConst";
 
 interface IMusicListProps {
-    sheetInfo: IMusic.IMusicSheetItem | null;
+    sheetInfo?: IMusic.IMusicSheetItem;
     musicList?: IMusic.IMusicItem[] | null;
     // 是否可收藏
     canStar?: boolean;
@@ -20,13 +20,14 @@ interface IMusicListProps {
     onRetry?: () => void;
     onLoadMore?: () => void;
 }
+
 export default function SheetMusicList(props: IMusicListProps) {
-    const { sheetInfo, musicList, canStar, state, onRetry, onLoadMore } = props;
+    const {sheetInfo, musicList, canStar, state, onRetry, onLoadMore} = props;
 
     return (
         <View style={globalStyle.fwflex1}>
             {!musicList ? (
-                <Loading />
+                <Loading/>
             ) : (
                 <HorizontalSafeAreaView style={globalStyle.fwflex1}>
                     <MusicList
@@ -50,10 +51,7 @@ export default function SheetMusicList(props: IMusicListProps) {
                             ) {
                                 TrackPlayer.play(musicItem);
                             } else {
-                                TrackPlayer.playWithReplacePlayList(
-                                    musicItem,
-                                    currentMusicList ?? [musicItem],
-                                );
+                                TrackPlayer.playPlayList(currentMusicList ?? [musicItem], sheetInfo, musicItem);
                             }
                         }}
                     />

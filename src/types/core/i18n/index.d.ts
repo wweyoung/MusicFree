@@ -46,6 +46,7 @@ export interface ILanguageData {
     "common.uploading": string; // 正在上传中
     "common.uploaded": string; // 上传完成
     "common.uploadError": string; // 上传失败
+    "common.copy": string; // 复制
 
     // 侧边栏相关
     "sidebar.basicSettings": string; // 基本设置
@@ -98,6 +99,7 @@ export interface ILanguageData {
     "toast.addToNextPlay": string; // 添加到下一曲
     "toast.beginDownload": string; // 开始下载
     "toast.rememberToSave": string; // 请记得保存
+    "toast.sheetEmpty": string; // 歌单为空
 
     // 本地音乐相关
     "localMusic.scanLocalMusic": string; // 扫描本地音乐
@@ -489,6 +491,7 @@ export interface ILanguageData {
     "panel.musicItemLyricOptions.enableDesktopLyric": string; // 开启
     "panel.musicItemLyricOptions.disableDesktopLyric": string; // 关闭
     "panel.musicItemLyricOptions.desktopLyricPermissionError": string; // 桌面歌词权限错误
+    "panel.musicItemLyricOptions.uploadLyric": string; // 上传歌词
     "panel.musicItemLyricOptions.uploadLocalLyric": string; // 上传本地歌词
     "panel.musicItemLyricOptions.uploadLocalLyricTranslation": string; // 上传本地歌词翻译
     "panel.musicItemLyricOptions.deleteLocalLyric": string; // 删除本地歌词
@@ -506,6 +509,7 @@ export interface ILanguageData {
     "panel.musicItemOptions.associateLyric": string; // 关联歌词
     "panel.musicItemOptions.unassociateLyric": string; // 解除关联歌词
     "panel.musicItemOptions.unassociateLyricSuccess": string; // 已解除关联歌词
+    "panel.musicItemOptions.uploadToPlugin": string; // 上传到插件
     "panel.musicItemOptions.timingClose": string; // 定时关闭
     "panel.musicItemOptions.clearPluginCache": string; // 清除插件缓存
     "panel.musicItemOptions.cacheCleared": string; // 缓存已清除

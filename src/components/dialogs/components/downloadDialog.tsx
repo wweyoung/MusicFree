@@ -11,6 +11,7 @@ import Button from "@/components/base/textButton.tsx";
 import Dialog from "./base";
 import PersistStatus from "@/utils/persistStatus";
 import { useI18N } from "@/core/i18n";
+import copyText from "@/utils/copyText";
 
 interface IDownloadDialogProps {
     version: string;
@@ -70,7 +71,7 @@ export default function DownloadDialog(props: IDownloadDialogProps) {
                         onPress={async () => {
                             PersistStatus.set("app.skipVersion", undefined);
                             openUrl(fromUrl);
-                            Clipboard.setString(fromUrl);
+                            copyText(fromUrl);
                         }}>
                         {t("dialog.downloadDialog.downloadUsingBrowser")}
                     </Button>
@@ -80,7 +81,7 @@ export default function DownloadDialog(props: IDownloadDialogProps) {
                             onPress={async () => {
                                 PersistStatus.set("app.skipVersion", undefined);
                                 openUrl(backUrl);
-                                Clipboard.setString(backUrl);
+                                copyText(backUrl);
                             }}>
                             {t("dialog.downloadDialog.backupUrl")}
                         </Button>

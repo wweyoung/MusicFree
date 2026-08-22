@@ -84,7 +84,7 @@ interface IListItemTextProps {
     fontColor?: keyof CustomizedColors;
     fontWeight?: keyof typeof fontWeightConst;
     width?: number;
-    position?: "left" | "right" | "none";
+    position?: "left" | "right" | "none" | 'center';
     fixedWidth?: boolean;
     containerStyle?: StyleProp<ViewStyle>;
     contentStyle?: StyleProp<TextStyle>;
@@ -106,8 +106,8 @@ function ListItemText(props: IListItemTextProps) {
     } = props;
 
     const defaultStyle: StyleProp<ViewStyle> = {
-        marginRight: position === "left" ? defaultPadding : 0,
-        marginLeft: position === "right" ? defaultPadding : 0,
+        marginRight: {left: defaultPadding, center: defaultPadding / 2}[position] ?? 0,
+        marginLeft: {right: defaultPadding, center: defaultPadding / 2}[position] ?? 0,
         width: fixedWidth ? width ?? defaultActionWidth : undefined,
         flexBasis: fixedWidth ? width ?? defaultActionWidth : undefined,
     };
@@ -130,7 +130,7 @@ interface IListItemIconProps {
     icon: IIconName;
     iconSize?: number;
     width?: number;
-    position?: "left" | "right" | "none";
+    position?: "left" | "right" | "none" | "center";
     fixedWidth?: boolean;
     containerStyle?: StyleProp<ViewStyle>;
     contentStyle?: StyleProp<ViewStyle>;
@@ -156,8 +156,8 @@ function ListItemIcon(props: IListItemIconProps) {
     const colors = useColors();
 
     const defaultStyle: StyleProp<ViewStyle> = {
-        marginRight: position === "left" ? defaultPadding : 0,
-        marginLeft: position === "right" ? defaultPadding : 0,
+        marginRight: {left: defaultPadding, center: defaultPadding / 2}[position] ?? 0,
+        marginLeft: {right: defaultPadding, center: defaultPadding / 2}[position] ?? 0,
         width: fixedWidth ? width ?? defaultActionWidth : undefined,
         flexBasis: fixedWidth ? width ?? defaultActionWidth : undefined,
     };
@@ -189,7 +189,8 @@ interface IListItemImageProps {
     fixedWidth?: boolean;
     containerStyle?: StyleProp<ViewStyle>;
     contentStyle?: StyleProp<ImageStyle>;
-    maskIcon?: IIconName | null;
+    children?: any;
+    onPress?: () => void;
 }
 
 function ListItemImage(props: IListItemImageProps) {
@@ -201,7 +202,8 @@ function ListItemImage(props: IListItemImageProps) {
         width,
         containerStyle,
         contentStyle,
-        maskIcon,
+        children,
+        onPress,
     } = props;
 
     const defaultStyle: StyleProp<ViewStyle> = {
@@ -210,24 +212,24 @@ function ListItemImage(props: IListItemImageProps) {
         width: fixedWidth ? width ?? defaultActionWidth : undefined,
         flexBasis: fixedWidth ? width ?? defaultActionWidth : undefined,
     };
-
-    return (
+    const component = (
         <View style={[styles.actionBase, defaultStyle, containerStyle]}>
             <FastImage
                 style={[styles.leftImage, contentStyle]}
                 source={uri}
                 placeholderSource={fallbackImg}
             />
-            {maskIcon ? (
+            {children ? (
                 <View style={[styles.leftImage, styles.imageMask]}>
-                    <Icon
-                        name={maskIcon}
-                        size={iconSizeConst.normal}
-                        color="red"
-                    />
+                    {children}
                 </View>
             ) : null}
         </View>
+    );
+    return onPress ? (
+        <TouchableOpacity onPress={onPress}>{component}</TouchableOpacity>
+    ) : (
+        component
     );
 }
 
@@ -317,8 +319,8 @@ const styles = StyleSheet.create({
     },
 
     leftImage: {
-        width: rpx(80),
-        height: rpx(80),
+        width: rpx(100),
+        height: rpx(100),
         borderRadius: rpx(16),
     },
     imageMask: {

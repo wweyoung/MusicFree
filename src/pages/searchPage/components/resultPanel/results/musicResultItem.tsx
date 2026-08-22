@@ -21,11 +21,10 @@ export default function MusicResultItem(props: IMusicResultsProps) {
                     "basic.clickMusicInSearch",
                 );
                 if (clickBehavior === "playMusicAndReplace") {
-                    TrackPlayer.playWithReplacePlayList(
-                        musicItem,
+                    TrackPlayer.playPlayList(
                         (pluginSearchResultRef?.current?.data ?? [
                             musicItem,
-                        ]) as IMusic.IMusicItem[],
+                        ]) as IMusic.IMusicItem[], undefined, musicItem
                     );
                 } else {
                     TrackPlayer.play(musicItem);

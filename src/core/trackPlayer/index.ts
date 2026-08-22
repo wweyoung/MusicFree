@@ -32,12 +32,15 @@ import {IPluginManager} from "@/types/core/pluginManager";
 import {ImgAsset} from "@/constants/assetsConst";
 import {resolveImportedAssetOrPath} from "@/utils/fileUtils";
 import lyricManager from "@/core/lyricManager";
+import Toast from "@/utils/toast";
+import i18n from "@/core/i18n";
 
 
 const currentMusicAtom = atom<IMusic.IMusicItem | null>(null);
 const repeatModeAtom = atom<MusicRepeatMode>(MusicRepeatMode.QUEUE);
 const qualityAtom = atom<IMusic.IQualityKey>("standard");
 const playListAtom = atom<IMusic.IMusicItem[]>([]);
+const currentSheetAtom = atom<IMusic.IMusicSheetItemBase | undefined>(undefined);
 
 
 class TrackPlayer extends EventEmitter<{
@@ -87,6 +90,10 @@ class TrackPlayer extends EventEmitter<{
         return getDefaultStore().get(currentMusicAtom);
     }
 
+    public get currentSheet() {
+        return getDefaultStore().get(currentSheetAtom);
+    }
+
     public get nextMusic() {
         const currentMusic = this.currentMusic;
         if (!currentMusic) {
@@ -126,6 +133,7 @@ class TrackPlayer extends EventEmitter<{
             PersistStatus.get("music.quality") ||
             this.configService.getConfig("basic.defaultPlayQuality") ||
             "standard";
+        const currentSheet = PersistStatus.get("music.sheet");
 
         ReactNativeTrackPlayer.setVolume(1);
         // 状态恢复
@@ -142,6 +150,10 @@ class TrackPlayer extends EventEmitter<{
                 undefined,
                 repeatMode === MusicRepeatMode.SHUFFLE,
             );
+        }
+        console.log(currentSheet)
+        if (currentSheet) {
+            getDefaultStore().set(currentSheetAtom, currentSheet);
         }
 
         if (track && this.isInPlayList(track)) {
@@ -699,6 +711,22 @@ class TrackPlayer extends EventEmitter<{
         }
     }
 
+    async playPlayList(musicList?: IMusic.IMusicItem[], sheet?:IMusic.IMusicSheetItemBase, musicItem?: IMusic.IMusicItem) : Promise<void> {
+        if (musicList && musicList.length > 0) {
+            this.setCurrentSheet(sheet);
+            let defaultPlayMusic = musicItem;
+            if (!defaultPlayMusic) {
+                defaultPlayMusic  = musicList[0];
+                if (this.repeatMode === MusicRepeatMode.SHUFFLE) {
+                    defaultPlayMusic = musicList[Math.floor(Math.random() * musicList.length)];
+                }
+            }
+            await this.playWithReplacePlayList(defaultPlayMusic, musicList);
+        } else {
+            Toast.warn(i18n.t("toast.sheetEmpty"));
+        }
+    }
+
     async playWithReplacePlayList(
         musicItem: IMusic.IMusicItem,
         newPlayList: IMusic.IMusicItem[],
@@ -728,6 +756,7 @@ class TrackPlayer extends EventEmitter<{
 
     async seekTo(progress: number) {
         PersistStatus.set("music.progress", progress);
+        lyricManager.refreshCurrentLyric();
         return ReactNativeTrackPlayer.seekTo(progress);
     }
 
@@ -790,6 +819,11 @@ class TrackPlayer extends EventEmitter<{
     private setQuality(quality: IMusic.IQualityKey) {
         getDefaultStore().set(qualityAtom, quality);
         PersistStatus.set("music.quality", quality);
+    }
+
+    private setCurrentSheet(sheet?: IMusic.IMusicSheetItemBase) {
+        getDefaultStore().set(currentSheetAtom, sheet);
+        PersistStatus.set("music.sheet", sheet);
     }
 
     // 设置音源
@@ -992,6 +1026,8 @@ export const usePlayList = () => useAtomValue(playListAtom);
 export const useCurrentMusic = () => useAtomValue(currentMusicAtom);
 export const useRepeatMode = () => useAtomValue(repeatModeAtom);
 export const useMusicQuality = () => useAtomValue(qualityAtom);
+export const useCurrentSheet = () => useAtomValue(currentSheetAtom);
+
 export function useMusicState() {
     const playbackState = usePlaybackState();
 

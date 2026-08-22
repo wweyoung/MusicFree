@@ -26,6 +26,7 @@ import i18n from "@/core/i18n";
 import bootstrapAtom from "./bootstrap.atom";
 import {getDefaultStore} from "jotai";
 import telemetry from "@/core/telemetry";
+import {FeedbackOptions} from "react-native-track-player/src/interfaces/FeedbackOptions";
 
 
 // 依赖管理
@@ -195,6 +196,7 @@ export async function initTrackPlayer() {
         Capability.Pause,
         Capability.SkipToNext,
         Capability.SkipToPrevious,
+        // Capability.Like
     ];
     if (Config.getConfig("basic.showExitOnNotification")) {
         capabilities.push(Capability.Stop);
@@ -210,6 +212,14 @@ export async function initTrackPlayer() {
         capabilities: capabilities,
         compactCapabilities: capabilities,
         notificationCapabilities: [...capabilities, Capability.SeekTo],
+        // likeOptions: {
+        //     icon: 'ic_heart_outline',     // 未收藏时显示空心
+        //     title: '收藏',
+        // },
+        // dislikeOptions: {
+        //     icon: 'ic_heart_filled',      // 已收藏时显示实心（如果用 dislike 模拟切换）
+        //     title: '已收藏',
+        // },
     });
     trace("播放器初始化完成");
     playerTimestamp.OptionsSetup = Date.now();

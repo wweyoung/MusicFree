@@ -9,7 +9,7 @@ const updateList = [
 
 interface IUpdateInfo {
     needUpdate: boolean;
-    data: {
+    data?: {
         version: string;
         changeLog: string[];
         download: string[];
@@ -18,6 +18,7 @@ interface IUpdateInfo {
 
 export default async function checkUpdate(): Promise<IUpdateInfo | undefined> {
     const currentVersion = DeviceInfo.getVersion();
+    let rawInfoData;
     for (let i = 0; i < updateList.length; ++i) {
         try {
             const rawInfo = (await axios.get(updateList[i])).data;
@@ -27,6 +28,17 @@ export default async function checkUpdate(): Promise<IUpdateInfo | undefined> {
                     data: rawInfo,
                 };
             }
-        } catch {}
+            if (!rawInfoData) {
+                rawInfoData = rawInfo;
+            }
+        } catch {
+            if (i >= updateList.length - 1) {
+                return undefined;
+            }
+        }
+    }
+    return {
+        needUpdate: false,
+        data: rawInfoData
     }
 }

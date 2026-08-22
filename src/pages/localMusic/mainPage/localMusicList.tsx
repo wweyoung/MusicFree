@@ -5,10 +5,18 @@ import { localMusicSheetId, localPluginPlatform, RequestStateCode } from "@/cons
 import HorizontalSafeAreaView from "@/components/base/horizontalSafeAreaView.tsx";
 import globalStyle from "@/constants/globalStyle";
 import { useI18N } from "@/core/i18n";
+import PlayAllBar from "@/components/base/playAllBar";
 
 export default function LocalMusicList() {
     const musicList = LocalMusicSheet.useMusicList();
     const { t } = useI18N();
+
+    const musicSheet = {
+        id: localMusicSheetId,
+        title: t("common.local"),
+        platform: localPluginPlatform,
+        musicList: musicList,
+    }
 
     return (
         <HorizontalSafeAreaView style={globalStyle.flex1}>
@@ -16,12 +24,10 @@ export default function LocalMusicList() {
                 musicList={musicList}
                 showIndex
                 state={RequestStateCode.IDLE}
-                musicSheet={{
-                    id: localMusicSheetId,
-                    title: t("common.local"),
-                    platform: localPluginPlatform,
-                    musicList: musicList,
-                }}
+                musicSheet={musicSheet}
+                Header={
+                    <PlayAllBar musicList={musicList} musicSheet={musicSheet} />
+                }
             />
         </HorizontalSafeAreaView>
     );

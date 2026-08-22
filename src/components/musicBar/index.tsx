@@ -1,15 +1,20 @@
 import React, {memo, useEffect, useState} from "react";
-import { ActivityIndicator, Keyboard, StyleSheet, View } from "react-native";
+import {ActivityIndicator, InteractionManager, Keyboard, StyleSheet, View} from "react-native";
 import rpx from "@/utils/rpx";
 import {CircularProgressBase} from "react-native-circular-progress-indicator";
 
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import useColors from "@/hooks/useColors";
 import IconButton from "../base/iconButton";
-import TrackPlayer, {useCurrentMusic, useMusicState, useProgress} from "@/core/trackPlayer";
+import TrackPlayer, {useCurrentMusic, useMusicState, useProgress, useRepeatMode} from "@/core/trackPlayer";
 import { musicIsBuffering, musicIsPaused } from "@/utils/trackUtils";
 import MusicInfo from "./musicInfo";
 import PlayListIcon from "./playListIcon";
+import Icon from "@/components/base/icon";
+import {showPanel} from "@/components/panels/usePanel";
+import {MusicRepeatModeInfo} from "@/constants/trackPlayerConst";
+import useOrientation from "@/hooks/useOrientation";
+import delay from "@/utils/delay";
 
 function CircularPlayBtn() {
     const progress = useProgress();
@@ -68,6 +73,8 @@ function MusicBar() {
 
     const colors = useColors();
     const safeAreaInsets = useSafeAreaInsets();
+    const repeatMode = useRepeatMode();
+    const orientation = useOrientation();
 
     useEffect(() => {
         const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -102,7 +109,45 @@ function MusicBar() {
                 >
                     <MusicInfo musicItem={musicItem} />
                     <View style={styles.actionGroup}>
+                        {orientation === 'horizontal' &&
+                            <Icon
+                                accessible
+                                accessibilityLabel={MusicRepeatModeInfo[repeatMode].text}
+                                name={MusicRepeatModeInfo[repeatMode].icon}
+                                size={rpx(56)}
+                                onPress={() => {
+                                    TrackPlayer.toggleRepeatMode();
+                                }}
+                                color={colors.musicBarText}
+                                style={{marginRight: rpx(48)}}
+                            />
+                        }
+                        {orientation === 'horizontal' &&
+                            <Icon
+                                accessible
+                                accessibilityLabel="上一首"
+                                name="skip-left"
+                                size={rpx(56)}
+                                onPress={() => {
+                                    TrackPlayer.skipToPrevious();
+                                }}
+                                color={colors.musicBarText}
+                            />
+                        }
                         <CircularPlayBtn />
+                        {orientation === 'horizontal' &&
+                            <Icon
+                                accessible
+                                accessibilityLabel="下一首"
+                                name="skip-right"
+                                size={rpx(56)}
+                                onPress={() => {
+                                    TrackPlayer.skipToNext();
+                                }}
+                                color={colors.musicBarText}
+                                style={{marginRight: rpx(48)}}
+                            />
+                        }
                         <PlayListIcon color={colors.musicBarText}/>
                     </View>
                 </View>
@@ -128,10 +173,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     actionGroup: {
-        width: rpx(200),
         justifyContent: "flex-end",
         flexDirection: "row",
         alignItems: "center",
-        gap: rpx(36)
+        gap: rpx(48),
+        paddingLeft: '1%'
     },
 });

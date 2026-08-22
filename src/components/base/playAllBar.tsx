@@ -12,12 +12,11 @@ import Toast from "@/utils/toast";
 import Icon from "@/components/base/icon.tsx";
 import MusicSheet, { useSheetIsStarred } from "@/core/musicSheet";
 import { useI18N } from "@/core/i18n";
-import { MusicRepeatMode } from "@/constants/trackPlayerConst";
 
 interface IProps {
     musicList: IMusic.IMusicItem[] | null;
     canStar?: boolean;
-    musicSheet?: IMusic.IMusicSheetItem | null;
+    musicSheet?: IMusic.IMusicSheetItem;
 }
 export default function (props: IProps) {
     const { musicList, canStar, musicSheet } = props;
@@ -32,26 +31,11 @@ export default function (props: IProps) {
     const starred = useSheetIsStarred(musicSheet);
 
     return (
-        <View style={style.topWrapper}>
+        <View style={style.topWrapper} >
             <Pressable
                 style={style.playAll}
                 onPress={() => {
-                    if (musicList) {
-                        let defaultPlayMusic = musicList[0];
-                        if (
-                            TrackPlayer.repeatMode ===
-                            MusicRepeatMode.SHUFFLE
-                        ) {
-                            defaultPlayMusic =
-                                musicList[
-                                    Math.floor(Math.random() * musicList.length)
-                                ];
-                        }
-                        TrackPlayer.playWithReplacePlayList(
-                            defaultPlayMusic,
-                            musicList,
-                        );
-                    }
+                    TrackPlayer.playPlayList(musicList, musicSheet);
                 }}>
                 <Icon
                     name="play-circle"

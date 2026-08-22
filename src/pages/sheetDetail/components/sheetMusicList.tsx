@@ -7,6 +7,7 @@ import globalStyle from "@/constants/globalStyle";
 import { useSheetItem } from "@/core/musicSheet";
 import { RequestStateCode } from "@/constants/commonConst";
 import { useCurrentMusic } from "@/core/trackPlayer";
+import PlayAllBar from "@/components/base/playAllBar";
 
 export default function SheetMusicList() {
     const { id = "favorite" } = useParams<"local-sheet-detail">();

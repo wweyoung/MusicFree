@@ -23,6 +23,7 @@ import {SectionList, StyleSheet, TouchableOpacity, View} from "react-native";
 import {readdir} from "react-native-fs";
 import {FlatList, ScrollView} from "react-native-gesture-handler";
 import {createRadio, createSwitch} from "@/utils/componentUtil";
+import copyText from "@/utils/copyText";
 
 function useCacheSize() {
     const [cacheSize, setCacheSize] = useState({
@@ -499,8 +500,7 @@ export default function BasicSetting() {
                             cancelText: t("dialog.errorLogKnow"),
                             okText: t("dialog.errorLogCopy"),
                             onOk() {
-                                Clipboard.setString(errorLogContent);
-                                Toast.success(t("toast.copiedToClipboard"));
+                                copyText(errorLogContent);
                             },
                         });
                     },

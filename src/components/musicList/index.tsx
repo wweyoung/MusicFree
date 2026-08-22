@@ -47,7 +47,7 @@ export default function MusicList(props: IMusicListProps) {
         onRetry,
         onLoadMore,
         highlightMusicItem,
-    } = props;    
+    } = props;
     const colors = useColors();
     const flashListRef = useRef<FlashList<IMusic.IMusicItem>>(null);
     const [showBadge, setShowBadge] = useState(false);
@@ -57,8 +57,8 @@ export default function MusicList(props: IMusicListProps) {
     const highlightIndex = React.useMemo(() => {
         if (!highlightMusicItem || !musicList) return -1;
         return musicList.findIndex(item => isSameMediaItem(item, highlightMusicItem));
-    }, [highlightMusicItem, musicList]);    
-    
+    }, [highlightMusicItem, musicList]);
+
     // 处理滚动开始
     const handleScrollBegin = useCallback(() => {
         if (highlightIndex !== -1) {
@@ -68,7 +68,7 @@ export default function MusicList(props: IMusicListProps) {
             setShowBadge(true);
         }
     }, [highlightIndex]);
-    
+
     // 处理滚动结束
     const handleScrollEnd = useCallback(() => {
         if (hideTimeoutRef.current) {
@@ -78,8 +78,8 @@ export default function MusicList(props: IMusicListProps) {
         hideTimeoutRef.current = setTimeout(() => {
             setShowBadge(false);
         }, 5000);
-    }, []);    
-    
+    }, []);
+
     // 滚动到高亮项
     const scrollToHighlight = useCallback(() => {
         if (highlightIndex !== -1 && flashListRef.current) {
@@ -94,8 +94,8 @@ export default function MusicList(props: IMusicListProps) {
                 clearTimeout(hideTimeoutRef.current);
             }
         }
-    }, [highlightIndex]);    
-    
+    }, [highlightIndex]);
+
     // 清理定时器
     useEffect(() => {
         return () => {
@@ -103,8 +103,8 @@ export default function MusicList(props: IMusicListProps) {
                 clearTimeout(hideTimeoutRef.current);
             }
         };
-    }, []);    
-    
+    }, []);
+
     return (
         <View style={styles.container}>
             <FlashList
@@ -129,9 +129,9 @@ export default function MusicList(props: IMusicListProps) {
                                 if (onItemPress) {
                                     onItemPress(musicItem, musicList);
                                 } else {
-                                    TrackPlayer.playWithReplacePlayList(
-                                        musicItem,
+                                    TrackPlayer.playPlayList(
                                         musicList ?? [musicItem],
+                                        musicSheet, musicItem
                                     );
                                 }
                             }}
@@ -146,7 +146,7 @@ export default function MusicList(props: IMusicListProps) {
                     }
                 }}
                 onEndReachedThreshold={0.1}
-            />              
+            />
             {showBadge && (
                 <View style={styles.badge} pointerEvents="box-none">
                     <Pressable

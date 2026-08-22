@@ -17,7 +17,7 @@ function TimeLabel(props: ITimeLabelProps) {
 }
 
 export default function SeekBar() {
-    const progress = useProgress(5009);
+    const progress = useProgress(500);
     const [tmpProgress, setTmpProgress] = useState<number | null>(null);
     const slidingRef = useRef(false);
 

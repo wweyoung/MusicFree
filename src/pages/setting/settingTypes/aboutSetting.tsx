@@ -37,8 +37,10 @@ export default function AboutSetting() {
                         resizeMode="contain"
                     />
                 </TouchableOpacity>
-                <ThemeText style={style.margin}>软件作者: 猫头猫</ThemeText>
-                <ThemeText style={style.margin}>二次开发: WeYoung</ThemeText>
+                <View style={style.contactContainer}>
+                    <ThemeText style={style.margin}>软件作者: 猫头猫</ThemeText>
+                    <ThemeText style={style.margin}>二次开发: WeYoung</ThemeText>
+                </View>
                 <ThemeText style={style.margin}>
                     公众号: 【一只猫头猫】
                 </ThemeText>
@@ -51,7 +53,8 @@ export default function AboutSetting() {
                     </ThemeText>
                     <ThemeText style={style.margin}>
                         小红书:{" "}
-                        <LinkText linkTo="https://www.xiaohongshu.com/user/profile/5ce6085200000000050213a6?xsec_token=YBqVNCKP4kpvphpU5sZI8WC93c5JINc3NhGtRBymgKvuo%3D&xsec_source=app_share&xhsshare=CopyLink&appuid=5ce6085200000000050213a6&apptime=1747275535&share_id=faef5820564a43be80e5b77da887e4b9&share_channel=copy_link">
+                        <LinkText
+                            linkTo="https://www.xiaohongshu.com/user/profile/5ce6085200000000050213a6?xsec_token=YBqVNCKP4kpvphpU5sZI8WC93c5JINc3NhGtRBymgKvuo%3D&xsec_source=app_share&xhsshare=CopyLink&appuid=5ce6085200000000050213a6&apptime=1747275535&share_id=faef5820564a43be80e5b77da887e4b9&share_channel=copy_link">
                             一只猫头猫
                         </LinkText>
                     </ThemeText>
@@ -60,7 +63,18 @@ export default function AboutSetting() {
             <ScrollView
                 contentContainerStyle={style.scrollViewContainer}
                 style={style.scrollView}>
-                <ThemeText fontSize="title">猫头猫的话: </ThemeText>
+                <ThemeText fontSize="title">WeYoung的话: </ThemeText>
+                <ThemeText style={style.content}>
+                    软件基于MusicFree二次优化开发，原作者是<ThemeText fontWeight="bold">猫头猫</ThemeText>🐱
+                </ThemeText>
+                <ThemeText style={style.content}>
+                    代码已开源到{" "}
+                    <LinkText linkTo="https://github.com/wweyoung/MusicFree">Github</LinkText>，
+                    如果有问题或者建议，可以直接去 Github issue 区留言，也可以去公众号【一只猫头猫】留言，也可以去{" "}
+                    <LinkText linkTo="https://pd.qq.com/s/weyoungmusic0">QQ 频道</LinkText>{" "}发帖。
+                </ThemeText>
+                <Divider style={style.content}/>
+                <ThemeText style={style.content} fontSize="title">猫头猫的话: </ThemeText>
                 <ThemeText style={style.content}>
                     软件作者是<ThemeText fontWeight="bold">猫头猫</ThemeText>
                     🐱，不是猫头鹰🦉，也不是什么其他的奇奇怪怪。软件没有其他版本，如果你下载到了付费版/广告版/挂羊头卖狗肉版，那说明你被坏蛋骗了😒。
@@ -78,7 +92,7 @@ export default function AboutSetting() {
                     source={ImgAsset.wechatChannel}
                     style={style.wcChannel}
                 />
-                <Divider style={style.content} />
+                <Divider style={style.content}/>
 
                 <ThemeText style={style.content}>
                     本软件完全免费，并基于{" "}
@@ -108,7 +122,7 @@ export default function AboutSetting() {
                     ，如果打不开试试把链接中的 github 换成 gitcode。
                 </ThemeText>
 
-                <Divider style={style.content} />
+                <Divider style={style.content}/>
 
                 <ThemeText style={style.content}>
                     本软件需要通过插件来完成包括播放、搜索在内的大部分功能，如果你是从第三方下载的插件，
@@ -127,7 +141,8 @@ export default function AboutSetting() {
                 <ThemeText style={style.content}>
                     如果有问题或者建议，可以直接去 Github issue
                     区留言，也可以去公众号【一只猫头猫】留言，也可以去{" "}
-                    <LinkText linkTo="https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=1XgzeY8LfIa&businessType=9&from=246610&biz=ka&mainSourceId=share&subSourceId=others&jumpsource=shorturl">
+                    <LinkText
+                        linkTo="https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=1XgzeY8LfIa&businessType=9&from=246610&biz=ka&mainSourceId=share&subSourceId=others&jumpsource=shorturl">
                         QQ 频道
                     </LinkText>{" "}
                     发帖。

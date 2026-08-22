@@ -5,6 +5,7 @@ import React from "react";
 import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Icon, { IIconName } from "@/components/base/icon.tsx";
+import useOrientation from "@/hooks/useOrientation";
 
 interface IActionButtonProps {
     iconName: IIconName;
@@ -17,12 +18,15 @@ interface IActionButtonProps {
 export default function ActionButton(props: IActionButtonProps) {
     const { iconName, iconColor, title, action, style } = props;
     const colors = useColors();
+    const orientation = useOrientation();
+
     // rippleColor="rgba(0, 0, 0, .32)"
     return (
         <TouchableOpacity
             onPress={action}
             style={[
                 styles.wrapper,
+                styles[`wrapper_${orientation}`],
                 {
                     backgroundColor: colors.card,
                 },
@@ -39,7 +43,7 @@ export default function ActionButton(props: IActionButtonProps) {
                     accessible={false}
                     fontSize="subTitle"
                     fontWeight="semibold"
-                    style={styles.text}>
+                    style={[styles.text, styles[`text_${orientation}`]]}>
                     {title}
                 </ThemeText>
             </>
@@ -50,15 +54,26 @@ export default function ActionButton(props: IActionButtonProps) {
 const styles = StyleSheet.create({
     wrapper: {
         width: rpx(140),
-        height: rpx(144),
         borderRadius: rpx(12),
         flexGrow: 1,
         flexShrink: 0,
-        flexDirection: "column",
         alignItems: "center",
+    },
+    wrapper_vertical: {
+        height: rpx(144),
         justifyContent: "center",
     },
+    wrapper_horizontal: {
+        flexDirection: "row",
+        height: rpx(100),
+        paddingHorizontal: rpx(30),
+    },
     text: {
+    },
+    text_vertical: {
         marginTop: rpx(12),
+    },
+    text_horizontal: {
+        marginLeft: rpx(12),
     },
 });

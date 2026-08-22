@@ -52,7 +52,7 @@ export default function Content() {
         const { index: activeIndex } = navigationState;
 
         return (
-            <View style={styles.dotTabBarContainer}>
+            <View style={styles.dotTabBarContainer} onTouchEnd={()=>jumpTo(routes[(index + 1) % routes.length].key)}>
                 {routes.map((route, index)=>(
                     <TouchableOpacity
                         key={route.key}
@@ -75,7 +75,7 @@ export default function Content() {
                 initialLayout={{ width: layout.width }}
                 renderTabBar={renderDotTabBar} // 替换为自定义圆点 TabBar
                 swipeEnabled={canSwipe}
-                lazy={true}
+                lazy={false}
                 sceneContainerStyle={{ flex: 1 }}
             />
         </View>
@@ -88,6 +88,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
+        paddingHorizontal: rpx(30),
+        paddingVertical: rpx(10),
     },
     // 基础圆点样式
     dotItem: {

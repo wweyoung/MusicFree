@@ -16,6 +16,7 @@ import { IIconName } from "@/components/base/icon.tsx";
 import { useI18N } from "@/core/i18n";
 import IconButton from "@/components/base/iconButton";
 import useRerender from "@/hooks/useRerender";
+import copyText from "@/utils/copyText";
 
 interface IPluginItemProps {
     plugin: Plugin;
@@ -56,8 +57,7 @@ function _PluginItem(props: IPluginItemProps) {
             icon: "share",
             async onPress() {
                 try {
-                    Clipboard.setString(plugin.instance.srcUrl!);
-                    Toast.success(t("toast.copiedToClipboard"));
+                    copyText(plugin.instance.srcUrl!);
                 } catch (e: any) {
                     Toast.warn(e?.message ?? t("toast.failToSharePlugin"));
                 }

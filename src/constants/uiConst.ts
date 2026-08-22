@@ -25,6 +25,7 @@ const fontWeightConst = {
 } as const;
 
 const iconSizeConst = {
+    tiny: rpx(24),
     small: rpx(30),
     light: rpx(36),
     normal: rpx(42),

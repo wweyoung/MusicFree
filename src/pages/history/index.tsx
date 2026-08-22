@@ -9,13 +9,20 @@ import MusicBar from "@/components/musicBar";
 import AppBar from "@/components/base/appBar";
 import { ROUTE_PATH, useNavigate } from "@/core/router";
 import { useI18N } from "@/core/i18n";
+import PlayAllBar from "@/components/base/playAllBar";
+import useColors from "@/hooks/useColors";
 
 export default function History() {
     const musicHistoryList = useMusicHistory();
 
     const navigate = useNavigate();
     const { t } = useI18N();
-
+    const colors = useColors();
+    const musicSheet: IMusic.IMusicSheetItem = {
+        id: musicHistorySheetId,
+        title: t("history.title"),
+        musicList: musicHistoryList,
+    } as IMusic.IMusicSheetItem
     return (
         <VerticalSafeAreaView style={globalStyle.fwflex1}>
             <StatusBar />
@@ -50,11 +57,10 @@ export default function History() {
                 musicList={musicHistoryList}
                 showIndex
                 state={RequestStateCode.IDLE}
-                musicSheet={{
-                    id: musicHistorySheetId,
-                    title: t("history.title"),
-                    musicList: musicHistoryList,
-                } as IMusic.IMusicSheetItem}
+                musicSheet={musicSheet}
+                Header={
+                    <PlayAllBar musicList={musicHistoryList} musicSheet={musicSheet}/>
+                }
             />
             <MusicBar />
         </VerticalSafeAreaView>

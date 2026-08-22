@@ -95,13 +95,11 @@ export default function MusicItem(props: IMusicItemProps) {
             />
             {showMoreIcon ? (
                 <ListItem.ListItemIcon
+                    containerStyle={{marginLeft: rpx(24)}}
                     fixedWidth={true}
-                    width={rpx(48)}
-                    hitSlop={{
-                        left: rpx(24),
-                        right: rpx(24),
-                    }}
-                    position="right"
+                    width={rpx(42)}
+                    hitSlop={rpx(12)}
+                    position="center"
                     icon="motion-play"
                     onPress={() => {
                         TrackPlayer.addNext(props.musicItem);
@@ -112,16 +110,14 @@ export default function MusicItem(props: IMusicItemProps) {
                 <ListItem.ListItemIcon
                     fixedWidth
                     width={rpx(42)}
-                    hitSlop={{
-                        left: rpx(24),
-                        right: rpx(24),
-                    }}
-                    position="right"
+                    // hitSlop={rpx(12)}
+                    position="center"
                     icon="ellipsis-vertical"
                     onPress={() => {
                         showPanel("MusicItemOptions", {
                             musicItem,
                             musicSheet,
+                            type: 'music'
                         });
                     }}
                 />

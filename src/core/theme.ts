@@ -40,13 +40,13 @@ export const lightTheme = {
         appBarText: basicColors.white,
         musicBar: basicColors.rgbeee,
         musicBarText: basicColors.rgb333,
-        divider: basicColors.rgbeee,
+        divider: "rgba(0,0,0,0.1)",
         listActive: basicColors.rgbeee, // 在手机上表现是ripple
         mask: "rgba(51,51,51,0.2)",
         backdrop: basicColors.rgbeee,
         tabBar: basicColors.rgbeee,
         placeholder: basicColors.rgbeee,
-        card: basicColors.rgbeee,
+        card: '#e2e2e288',
         notification: basicColors.rgbeee,
     },
 };
@@ -73,7 +73,7 @@ export const darkTheme = {
         backdrop: basicColors.rgb333,
         tabBar: basicColors.rgb333,
         placeholder: "#424242",
-        card: basicColors.rgb333,
+        card: "#333333bb",
         notification: basicColors.rgb333,
     },
 };
@@ -95,7 +95,7 @@ const themeStore = new GlobalState(darkTheme);
 const backgroundStore = new GlobalState<IBackgroundInfo | null>(null);
 
 export function getCurrentThemeDefault() {
-    const currentTheme = Config.getConfig("theme.selectedTheme") ?? "p-light";
+    const currentTheme = Config.getConfig("theme.selectedTheme") ?? "p-dark";
 
     if (currentTheme === "p-dark") {
         return darkTheme;
@@ -114,13 +114,18 @@ export function getCurrentThemeDefault() {
 }
 
 export function getCurrentTheme() {
-    const currentTheme = Config.getConfig("theme.selectedTheme") ?? "p-light";
+    const currentTheme = Config.getConfig("theme.selectedTheme");
+    let themeDefault = getCurrentThemeDefault();
+    if (!currentTheme) {
+        Config.setConfig("theme.selectedTheme", themeDefault.id);
+        return themeDefault;
+    }
 
     return {
         id: currentTheme,
-        dark: currentTheme !== "p-light",
+        dark: themeDefault.dark,
         // @ts-ignore
-        colors: (Config.getConfig("theme.colors") as CustomizedColors)
+        colors: (Config.getConfig("theme.colors") as CustomizedColors) ?? themeDefault.colors
     };
 }
 
@@ -162,7 +167,6 @@ function setTheme(
             },
         });
         console.log( themeStore.getValue().colors)
-        Config.setConfig("theme.defaultColors", themeStore.getValue().colors);
     }
 
     Config.setConfig("theme.selectedTheme", themeName);

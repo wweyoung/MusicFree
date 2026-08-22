@@ -19,6 +19,7 @@ import ImageColors from "react-native-image-colors";
 import {launchImageLibrary} from "react-native-image-picker";
 import ThemeColors from "@/pages/setting/settingTypes/themeSetting/themeColors";
 import {errorLog} from "@/utils/log";
+import Config from "@/core/appConfig";
 
 export default function Body() {
     const theme = Theme.useTheme();
@@ -121,6 +122,7 @@ export default function Body() {
                     url: `file://${bgPath}#${Date.now()}`,
                 },
             });
+            Config.setConfig("theme.defaultColors", Config.getConfig("theme.colors"));
             // Config.set('setting.theme.colors', {
             //     primary: primaryColor,
             //     textHighlight: textHighlight,

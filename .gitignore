@@ -88,3 +88,4 @@ scripts/
 .expo
 dist/
 web-build/
+package-lock.json

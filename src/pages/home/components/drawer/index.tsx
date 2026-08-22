@@ -5,18 +5,19 @@ import PageBackground from "@/components/base/pageBackground";
 import ThemeText from "@/components/base/themeText";
 import { showDialog } from "@/components/dialogs/useDialog";
 import { showPanel } from "@/components/panels/usePanel";
-import { useI18N } from "@/core/i18n";
+import i18n, { useI18N } from "@/core/i18n";
 import { ROUTE_PATH, useNavigate } from "@/core/router";
 import TrackPlayer from "@/core/trackPlayer";
-import { checkUpdateAndShowResult } from "@/hooks/useCheckUpdate.ts";
+import {checkUpdateAndShowResult, copyDownloadUrl} from "@/hooks/useCheckUpdate.ts";
 import NativeUtils from "@/native/utils";
 import rpx from "@/utils/rpx";
 import { useScheduleCloseCountDown } from "@/utils/scheduleClose";
 import timeformat from "@/utils/timeformat";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
 import React, { memo } from "react";
-import { BackHandler, Platform, StyleSheet, View } from "react-native";
+import {BackHandler, Clipboard, Platform, StyleSheet, View} from "react-native";
 import { default as DeviceInfo, default as deviceInfoModule } from "react-native-device-info";
+import Toast from "@/utils/toast";
 
 const ITEM_HEIGHT = rpx(108);
 
@@ -166,7 +167,8 @@ function HomeDrawer(props: any) {
                         key={"update"}
                         onPress={() => {
                             checkUpdateAndShowResult(true);
-                        }}>
+                        }}
+                        onLongPress={copyDownloadUrl}>
                         <ListItem.ListItemIcon
                             icon={"arrow-path"}
                             width={rpx(48)}

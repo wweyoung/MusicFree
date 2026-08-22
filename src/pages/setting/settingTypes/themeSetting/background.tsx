@@ -124,7 +124,7 @@ export default function Background() {
                                 Config.setConfig("theme.followSystem", false);
                                 Theme.setTheme("custom", {
                                     colors: Config.getConfig(
-                                        "theme.customColors",
+                                        "theme.defaultColors",
                                     ),
                                 });
                             } else {

@@ -289,8 +289,8 @@ export function LyricSetting() {
 
 const lyricStyles = StyleSheet.create({
     slider: {
-        width:"100%",
-        marginLeft: rpx(24),
+        flex: 1,
+        paddingLeft: rpx(24),
         maxWidth: rpx(1000),
     },
     sliderContainer: {

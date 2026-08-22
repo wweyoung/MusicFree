@@ -13,6 +13,7 @@ import { showDialog } from "@/components/dialogs/useDialog";
 import AppBar from "@/components/base/appBar";
 import Fab from "@/components/base/fab";
 import { useI18N } from "@/core/i18n";
+import copyText from "@/utils/copyText";
 
 interface ISubscribeItem {
     name: string;
@@ -122,8 +123,7 @@ export default function PluginSubscribe() {
                                     icon="share"
                                     position="right"
                                     onPress={() => {
-                                        Clipboard.setString(item.url);
-                                        Toast.success(t("toast.copiedToClipboard"));
+                                        copyText(item.url);
                                     }}
                                 />
                             </ListItem>

@@ -118,18 +118,18 @@ export default function Lyric(props: IProps) {
     };
 
     useEffect(() => {
+        console.log(currentLrcItem)
         // 暂停且拖拽才返回
         if (
             lyrics.length === 0 ||
             draggingIndex !== undefined ||
-            (draggingIndex === undefined && musicIsPaused(musicState)) ||
             lyrics[lyrics.length - 1].time < 1
         ) {
             return;
         }
         scrollToIndex(currentLrcItem?.index, true);
         // 音乐暂停状态不应该影响到滑动，所以不放在依赖里，但是这样写不好。。
-    }, [currentLrcItem, lyrics, draggingIndex]);
+    }, [currentLrcItem, lyrics]);
 
     useEffect(() => {
         scrollToCurrentLrcItem();
@@ -221,7 +221,7 @@ export default function Lyric(props: IProps) {
                                 setLayout(e.nativeEvent.layout);
                             }}
 
-                            windowSize={200}
+                            windowSize={15}
                             onScrollToIndexFailed={({ index, highestMeasuredFrameIndex }) => {
                                 delay(1).then(() => {
                                     scrollToIndex(index, false);

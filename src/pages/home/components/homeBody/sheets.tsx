@@ -14,19 +14,34 @@ import rpx from "@/utils/rpx";
 import Toast from "@/utils/toast";
 import {FlashList} from "@shopify/flash-list";
 import React, {useMemo, useRef, useState} from "react";
-import {StyleSheet, View} from "react-native";
+import {ActivityIndicator, StyleSheet, View} from "react-native";
 import {Pressable} from "react-native-gesture-handler";
 import Tag from "@/components/base/tag";
+import Icon from "@/components/base/icon";
+import {fontSizeConst, iconSizeConst} from "@/constants/uiConst";
+import TrackPlayer, {useCurrentSheet, useMusicState} from "@/core/trackPlayer";
+import {musicIsBuffering, musicIsPaused} from "@/utils/trackUtils";
+import usePluginSheetMusicList from "@/pages/pluginSheetDetail/hooks/usePluginSheetMusicList";
+import PluginManager from "@/core/pluginManager";
+import {getDefaultStore} from "jotai";
+import useOrientation from "@/hooks/useOrientation";
 
 export default function Sheets() {
     const [index, setIndex] = useState(0);
+    let [loadingSheet, setLoadingSheet] = useState<IMusic.IMusicSheetItemBase | undefined>(undefined);
+    const loadingSheetRef = useRef<IMusic.IMusicSheetItemBase | undefined>(undefined);
+
+
     const colors = useColors();
     const navigate = useNavigate();
 
     const allSheets = useSheetsBase();
     const staredSheets = useStarredSheets();
-    const { t } = useI18N();
+    const currentSheet = useCurrentSheet();
+    const musicState = useMusicState();
+    const orientation = useOrientation();
 
+    const {t} = useI18N();
     const selectedTabTextStyle = useMemo(() => {
         return [
             styles.selectTabText,
@@ -35,7 +50,7 @@ export default function Sheets() {
             },
         ];
     }, [colors]);
-    const [pressingSheet, setPressingSheet] = useState(undefined);
+    const [pressingSheet, setPressingSheet] = useState<IMusic.IMusicSheetItem | undefined>(undefined);
     const pressingTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
     return (
         <>
@@ -127,15 +142,17 @@ export default function Sheets() {
                                 }
                             },
                         });
-                    }} />
+                    }}/>
                 </View>
             </View>
             <FlashList
-                ListEmptyComponent={<Empty />}
-                extraData={{ t }}
+                ListEmptyComponent={<Empty/>}
+                extraData={{t}}
                 data={(index === 0 ? allSheets : staredSheets) ?? []}
                 estimatedItemSize={ListItem.Size.big}
-                renderItem={({ item: sheet }) => {
+                numColumns={orientation === 'vertical' ? 1 : 2}
+                renderItem={({item}) => {
+                    const sheet = item as IMusic.IMusicSheetItem;
                     const isLocalSheet = !(
                         sheet.platform && sheet.platform !== localPluginPlatform
                     );
@@ -155,10 +172,10 @@ export default function Sheets() {
                                     });
                                 }
                             }}
-                            onLongPress={()=>{
+                            onLongPress={() => {
                                 clearTimeout(pressingTimerRef.current);
                                 setPressingSheet(sheet)
-                                pressingTimerRef.current = setTimeout(()=>{
+                                pressingTimerRef.current = setTimeout(() => {
                                     setPressingSheet(undefined);
                                 }, 2000)
                             }}
@@ -166,12 +183,70 @@ export default function Sheets() {
                             <ListItem.ListItemImage
                                 uri={sheet.coverImg ?? sheet.artwork}
                                 fallbackImg={ImgAsset.albumDefault}
-                                maskIcon={
-                                    sheet.id === MusicSheet.defaultSheet.id
-                                        ? "heart"
-                                        : null
+                                onPress={async (e) => {
+                                    if (currentSheet?.id === sheet.id && currentSheet?.platform === sheet.platform && TrackPlayer.playList?.length > 0) {
+                                        if (musicIsPaused(musicState)) {
+                                            TrackPlayer.play();
+                                        } else {
+                                            TrackPlayer.pause();
+                                        }
+                                        return;
+                                    }
+
+                                    // 播放
+                                    if (isLocalSheet) {
+                                        const sortedMusicList = MusicSheet.getSortedMusicListBySheetId(sheet.id);
+                                        TrackPlayer.playPlayList(sortedMusicList.musicList, sheet);
+                                    } else {
+                                        setLoadingSheet(sheet);
+                                        loadingSheetRef.current = sheet;
+                                        console.log(loadingSheet, sheet.id)
+                                        await PluginManager.getByMedia(sheet)?.methods?.getMusicSheetInfo?.(
+                                            sheet, 0)
+                                            .then(result => {
+                                                if (!result) {
+                                                    // throw new Error();
+                                                    return;
+                                                }
+                                                loadingSheet = loadingSheetRef.current;
+                                                console.log(loadingSheet, sheet.id)
+                                                if (loadingSheet?.id === sheet.id && loadingSheet?.platform === sheet.platform) {
+                                                    TrackPlayer.playPlayList(result?.musicList, sheet);
+                                                }
+                                            })
+                                            .catch(e => {
+                                                Toast.warn(i18n.t("common.failToLoad"));
+                                            })
+                                            .finally(() => {
+                                                setLoadingSheet(undefined);
+                                                loadingSheetRef.current = undefined;
+                                            });
+                                    }
+
+                                }}
+                            >
+                                {sheet.id === MusicSheet.defaultSheet.id &&
+                                <Icon
+                                    name="heart"
+                                    size={iconSizeConst.normal}
+                                    color="red"
+                                    style={styles.maskIcon}
+                                />
                                 }
-                            />
+                                <View style={[styles.maskIcon, styles.playSheet, {
+                                    backgroundColor: colors.card,
+                                }]}>
+                                    {(loadingSheet?.id === sheet.id && loadingSheet?.platform === sheet.platform) || (currentSheet?.id === sheet.id && currentSheet?.platform === sheet.platform && musicIsBuffering(musicState)) ?
+                                        <ActivityIndicator animating color={colors.text} size={iconSizeConst.tiny}/>
+                                        :
+                                        <Icon
+                                            name={currentSheet?.id === sheet.id && currentSheet?.platform === sheet.platform && !musicIsPaused(musicState) ? "pause" : "play"}
+                                            size={iconSizeConst.tiny}
+                                            color={colors.text}
+                                        />
+                                    }
+                                </View>
+                            </ListItem.ListItemImage>
                             <ListItem.Content
                                 title={sheet.title}
                                 description={
@@ -188,15 +263,17 @@ export default function Sheets() {
                             />
                             {pressingSheet === sheet ? (
                                 <>
-                                <ListItem.ListItemIcon
-                                    position="right"
-                                    icon="pencil-outline"
-                                    onPress={() => {
-                                        navigate(ROUTE_PATH.EDIT_MUSIC_SHEET_INFO, {
-                                            musicSheet: sheet,
-                                        });
-                                    }}
-                                />
+                                    {isLocalSheet &&
+                                    <ListItem.ListItemIcon
+                                        position="right"
+                                        icon="pencil-outline"
+                                        onPress={() => {
+                                            navigate(ROUTE_PATH.EDIT_MUSIC_SHEET_INFO, {
+                                                musicSheet: sheet,
+                                            });
+                                        }}
+                                    />
+                                    }
                                     {sheet.id !== MusicSheet.defaultSheet.id &&
                                     <ListItem.ListItemIcon
                                         position="right"
@@ -227,7 +304,8 @@ export default function Sheets() {
                             ) : null}
                         </ListItem>
                     );
-                }}
+                }
+                }
                 nestedScrollEnabled
             />
         </>
@@ -266,4 +344,14 @@ const styles = StyleSheet.create({
     newSheetButton: {
         marginRight: rpx(24),
     },
+    maskIcon: {
+        position: "absolute",
+    },
+    playSheet: {
+        right: rpx(4),
+        bottom: rpx(4),
+        paddingHorizontal: rpx(8),
+        paddingVertical: rpx(4),
+        borderRadius: rpx(8),
+    }
 });

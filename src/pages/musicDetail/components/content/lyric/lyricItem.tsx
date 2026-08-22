@@ -1,59 +1,78 @@
-import React, {memo} from "react";
-import {StyleSheet, Text} from "react-native";
+import React, { memo, useEffect } from "react";
+import { StyleSheet, Text } from "react-native";
 import rpx from "@/utils/rpx";
 import useColors from "@/hooks/useColors";
-import {fontSizeConst} from "@/constants/uiConst";
+import { fontSizeConst } from "@/constants/uiConst";
+import Animated, {
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+    Easing,
+} from "react-native-reanimated";
 
 interface ILyricItemComponentProps {
-    // 行号
     index?: number;
-    // 显示
     light?: boolean;
-    // 高亮
     highlight?: boolean;
-    // 文本
     text?: string;
-    // 字体大小
     fontSize?: number;
-
-    textAlign?: 'center' | 'left'
-
+    textAlign?: "center" | "left";
     onLayout?: (index: number, height: number) => void;
 }
 
 function _LyricItemComponent(props: ILyricItemComponentProps) {
-    const { light, highlight, text, onLayout, index, fontSize, textAlign } = props;
+    const {
+        light,
+        highlight = false,
+        text,
+        onLayout,
+        index,
+        fontSize = fontSizeConst.content,
+        textAlign,
+    } = props;
 
     const colors = useColors();
 
+    // 使用 shared value 控制缩放比例
+    const scale = useSharedValue(0);
+
+    useEffect(() => {
+        scale.value = withTiming(highlight ? 1 : 0, {
+            duration: 250,
+            easing: Easing.linear,
+        });
+    }, [highlight]);
+    const animatedStyle = useAnimatedStyle(() => ({
+        fontSize: (1 + 0.2 * scale.value) * fontSize,
+    }));
+
     return (
-        <Text
+        <Animated.Text
             onLayout={({ nativeEvent }) => {
                 if (index !== undefined) {
                     onLayout?.(index, nativeEvent.layout.height);
                 }
             }}
             style={[
+                animatedStyle,
                 lyricStyles.item,
                 {
-                    fontSize: fontSize || fontSizeConst.content,
-                    textAlign:  textAlign || 'center'
-            },
-                highlight
-                    ? [
-                        lyricStyles.highlightItem,
-                        {
-                            color: colors.primary,
-                        },
-                    ]
-                    : null,
-                light ? lyricStyles.draggingItem : null,
-            ]}>
+                    textAlign: textAlign || "center",
+                },
+                highlight && [
+                    lyricStyles.highlightItem,
+                    {
+                        color: colors.primary,
+                    },
+                ],
+                light && lyricStyles.draggingItem,
+            ]}
+        >
             {text}
-        </Text>
+        </Animated.Text>
     );
 }
-// 歌词
+
 const LyricItemComponent = memo(
     _LyricItemComponent,
     (prev, curr) =>
@@ -70,6 +89,7 @@ export default LyricItemComponent;
 const lyricStyles = StyleSheet.create({
     highlightItem: {
         opacity: 1,
+        fontWeight: '500'
     },
     item: {
         color: "white",

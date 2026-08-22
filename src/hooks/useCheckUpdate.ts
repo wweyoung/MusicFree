@@ -5,14 +5,18 @@ import Toast from "@/utils/toast";
 import { compare } from "compare-versions";
 import { useEffect } from "react";
 import i18n from "@/core/i18n";
+import {Clipboard} from "react-native";
+import copyText from "@/utils/copyText";
 
 export const checkUpdateAndShowResult = (
     showToast = false,
     checkSkip = false,
 ) => {
     checkUpdate().then(updateInfo => {
-        if (updateInfo?.needUpdate) {
-            const { data } = updateInfo;
+        if (!updateInfo) {
+            Toast.warn(i18n.t("common.failToLoad"));
+        } else if (updateInfo.needUpdate) {
+            const { data } = !updateInfo;
             const skipVersion = PersistStatus.get("app.skipVersion");
             console.log(skipVersion, data);
             if (
@@ -35,6 +39,16 @@ export const checkUpdateAndShowResult = (
         }
     });
 };
+
+export function copyDownloadUrl() {
+    checkUpdate().then(updateInfo => {
+        if (!updateInfo) {
+            Toast.warn(i18n.t("common.failToLoad"));
+        } else {
+            copyText(updateInfo?.data!.download[0]);
+        }
+    });
+}
 
 export default function (callOnMount = true) {
     useEffect(() => {

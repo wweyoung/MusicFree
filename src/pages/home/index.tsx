@@ -23,7 +23,6 @@ function Home() {
             <HomeStatusBar />
             <HorizontalSafeAreaView style={globalStyle.flex1}>
                 <>
-                    <NavBar />
                     {orientation === "vertical" ? (
                         <HomeBody />
                     ) : (

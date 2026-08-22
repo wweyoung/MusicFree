@@ -108,6 +108,7 @@ export default function Operations() {
                         showPanel("MusicItemOptions", {
                             musicItem: musicItem,
                             from: ROUTE_PATH.MUSIC_DETAIL,
+                            type: 'music'
                         });
                     }
                 }}
